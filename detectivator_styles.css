@@ -1,4 +1,4 @@
-#container {
+#container > body {
     justify-content: left;
     padding: 10px;
 }
