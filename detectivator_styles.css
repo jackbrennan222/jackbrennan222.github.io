@@ -2,3 +2,15 @@
     justify-content: center;
     padding: 10px;
 }
+
+h1 {
+    color: blue;
+}
+
+h2 {
+    color: cadetblue;
+}
+
+p {
+    color: gray;
+}
