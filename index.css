@@ -1,15 +1,13 @@
-body {
+.navDiv {
     display: flex;
-    background-color: #f3f3f3;
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #212529;
-    margin: 0;
-    padding: 0;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    justify-content: space-around;
+    border: 1px solid black;
+    padding: 3px;
+}
+
+.headerDiv {
+    display: flex;
     justify-content: center;
-    text-align: center;
+    align-items: center;
 }
