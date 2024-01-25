@@ -10,4 +10,7 @@ body {
     padding: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 }
