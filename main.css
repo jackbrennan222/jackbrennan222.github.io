@@ -1,14 +1,26 @@
 body {
-    padding-left: 15%;
-    padding-right: 15%;
+    padding-left: 25%;
+    padding-right: 25%;
     padding-top: 50px
+}
+
+.headerDiv {
+    display: flex;
+    justify-content: start;
+    align-items: baseline;
+}
+
+.headerDiv > h1 {
+    padding-inline: 10px;
 }
 
 .navDiv {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    padding: 3px;
+    justify-content: space-between;
+    border: 1px solid black;
+    padding-inline: 30px;
+    padding-block: 10px;
 }
 
 .navDiv > b {
@@ -26,10 +38,4 @@ body {
 .navDiv > a:hover {
     box-shadow: inset 0 0 0 100px #54b3d6;
     color: white;
-}
-
-.headerDiv {
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
