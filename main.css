@@ -8,8 +8,24 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    border: 1px solid black;
     padding: 3px;
+}
+
+.navDiv > b {
+    font-size: large;
+}
+
+.navDiv > a {
+    box-shadow: inset 0 0 0 0 #54b3d6;
+    color: #54b3d6;
+    margin: 0 -.25rem;
+    padding: 0 .25rem;
+    transition: color .3s ease-in-out, box-shadow .3s ease-in-out;
+}
+
+.navDiv > a:hover {
+    box-shadow: inset 0 0 0 100px #54b3d6;
+    color: white;
 }
 
 .headerDiv {
