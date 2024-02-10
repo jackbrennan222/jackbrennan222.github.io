@@ -21,14 +21,13 @@ body {
 .headerDiv {
     display: flex;
     justify-content: start;
-    align-items: baseline;
+    align-items: center;
 }
 
 .headerDiv > h1 {
     padding-inline: 25px;
     color: var(--green);
     font-size: 4em;
-    align-self: center;
 }
 
 .navDiv {
