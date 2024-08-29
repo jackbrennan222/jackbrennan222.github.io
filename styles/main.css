@@ -70,3 +70,13 @@
     box-shadow: inset 0 0 0 100px var(--purple);
     color: var(--white);
 }
+
+.resumeDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.resumeDiv > p {
+    color: var(--white);
+}
