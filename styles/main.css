@@ -47,7 +47,7 @@
 .navDiv {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
     border: 1px solid var(--white);
     padding-inline: 30px;
     padding-block: 10px;
