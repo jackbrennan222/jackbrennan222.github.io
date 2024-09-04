@@ -14,9 +14,8 @@
 /* Desktop */
 @media (pointer: fine), (pointer: none) {
     body {
-        padding-left: 20%;
-        padding-right: 20%;
-        padding-top: 50px;
+        display: grid;
+        grid-template-columns: max(20%, 100px) auto max(20%, 100px); 
     }
 }
 
@@ -25,7 +24,6 @@
     body {
         padding-left: 10%;
         padding-right: 10%;
-        padding-top: 50px;
     }
     
     p {
@@ -35,12 +33,19 @@
 
 body {
     background-color: var(--black);
+    grid-template-rows: 50px auto auto auto 50px;
+    row-gap: 15px;
+}
+
+body * {
+    grid-column-start: 2;
 }
 
 .headerDiv {
     display: flex;
     justify-content: start;
     align-items: center;
+    grid-row-start: 2;
 }
 
 .headerDiv > h1 {
@@ -50,6 +55,7 @@ body {
 }
 
 .navDiv {
+    grid-row-start: 3;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -77,6 +83,7 @@ body {
 }
 
 .resumeDiv {
+    grid-row-start: 4;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -87,6 +94,7 @@ body {
 }
 
 .contentDiv {
+    grid-row-start: 4;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -95,4 +103,16 @@ body {
 .contentDiv > p {
     color: var(--white);
     font-size: 1.5em;
+}
+
+footer {
+    grid-row-start: 5;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+}
+
+footer > i, a {
+    color: var(--white);
 }
