@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CheerpJ test</title>
+    <script src="https://cjrtnc.leaningtech.com/3.0/cj3loader.js"></script>
+  </head>
+  <body>
+    <script>
+      (async function () {
+        await cheerpjInit();
+        cheerpOSAddStringFile("/str/ClueSetup.txt", `// Rooms and room cards
+Room, CTLM, C
+Room, Marquez, M
+Room, Hill, H
+Room, Alderson, A
+Room, Library, L
+Room, Green Hall, G
+Room, Market, R
+Room, Dober, D
+Room, Kaff, K
+// other spaces on board
+Space, Unused, X
+Space, Walkway, W
+// Weapons and players
+Weapon, Knife
+Weapon, Fist
+Weapon, Gun
+Weapon, Laser
+Weapon, Pointy Tongue
+Weapon, Cool Sword
+Human, White, White, 0, 8
+Computer, Orange, Orange, 6, 0
+Computer, Magenta, Magenta, 0, 17
+Computer, Blue, Blue, 16, 24
+Computer, Red, Red, 24, 17
+Computer, Green, Green, 24, 7`);
+        cheerpOSAddStringFile("/str/ClueLayout.csv", `C,C,C,C,C,X,X,X,W,M,M,M,M,M,X,X,X,W,H,H,H,H,X,X,X
+C,C#,C,C,C,C,C,W,W,M,M#,M,M,M,M,M,W,W,H,H#,H,H,H,H,X
+C,C,C,C,C,C,C,W,W,M,M,M,M,M,M,M,W,W,H,H,H,H,H,H,X
+X,C,C,C*,C,C,C,W<,W,M,M,M,M*,M,M,M,W,W>,H,H,H,H*,H,H,HR
+X,C,C,C,C,C,C,W,W,M,M,M,M,M,M,M,W,W,H,H,H,H,H,H,H
+X,CK,C,C,C,C,C,W,W,M,M,M,M,M,M,M,W,W,H,H,H,H,H,H,H
+W,W,W,W,W,W,W,W,W,M,M,M,M,M,M,M,W,W,H,H,H,H,H,H,H
+W,W,W,Wv,W,W,W,W,W,W,W,W,W^,W,W,W,W,W,W,W,W,W,W,W,W
+A,A,A,A,A,A,A,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W
+A,A#,A,A,A,A,A,W,W,X,X,X,X,X,X,X,W,W,L,L,L,L,L,L,L
+A,A,A,A*,A,A,A,W,W,X,X,X,X,X,X,X,W,W,L,L#,L,L,L,L,L
+A,A,A,A,A,A,A,W,W,X,X,X,X,X,X,X,W,W,L,L,L,L,L,L,L
+W,W,W,W,W,W,W,W,W,X,X,X,X,X,X,X,W,W,L,L,L,L*,L,L,L
+G,G,G,G,G,G,G,W,W,X,X,X,X,X,X,X,W,W,L,L,L,L,L,L,L
+G,G#,G,G,G,G,G,W,W,X,X,X,X,X,X,X,W,W,L,L,L,L,L,L,L
+G,G,G,G*,G,G,G,W<,W,X,X,X,X,X,X,X,W,W,L,L,L,L,L,L,L
+G,G,G,G,G,G,G,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W^,W,W,W
+W,W,W,W,W,W,W,W,W,W,W,W,Wv,W,W,W,W,W,W,W,W,W,W,W,W
+R,R,R,R,R,R,R,W,W,D,D,D,D,D,D,D,W,W,K,K,K,K,K,K,K
+R,R#,R,R,R,R,R,W,W,D,D#,D,D,D,D,D,W,W,K,K#,K,K,X,X,X
+R,R,R,R,R,R,R,W,W,D,D,D,D,D,D,D,W,W,K,K,K,K,K,K,X
+R,R,R,R*,R,R,R,W<,W,D,D,D,D*,D,D,D,W,W>,K,K*,K,K,X,X,X
+R,R,R,R,R,R,R,W,W,D,D,D,D,D,D,D,W,W,K,K,K,K,K,K,X
+R,R,R,R,R,R,R,W,W,D,D,D,D,D,D,D,W,W,K,K,K,K,X,X,X
+RH,R,R,R,R,R,R,W,X,X,X,X,X,X,X,X,X,W,KC,K,K,K,K,K,K`);
+        cheerpjCreateDisplay(750, 750);
+        await cheerpjRunJar("/app/clue.jar");
+      })();
+    </script>
+  </body>
+</html>
