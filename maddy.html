@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M.A.D.D.Y. | Summer Social Calendar</title>
+  <link href="styles/maddy.css" rel="stylesheet" type="text/css" />
+  <link rel="icon" type="images/x-icon" href="assets/favicon_io/favicon.ico">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="summer-illustration" aria-hidden="true">🏖️</div>
+
+      <nav class="nav">
+        <button class="active"><span class="nav-icon">⌂</span><span>Home</span></button>
+        <button><span class="nav-icon">▣</span><span>Calendar</span></button>
+        <button><span class="nav-icon">☆</span><span>Events</span></button>
+        <button><span class="nav-icon">▥</span><span>Polls</span></button>
+        <button><span class="nav-icon">▧</span><span>Gallery</span></button>
+        <button><span class="nav-icon">♡</span><span>Members</span></button>
+        <button><span class="nav-icon">ⓘ</span><span>About</span></button>
+      </nav>
+
+      <div class="quote-card">
+        Good friends.<br />
+        Good plans.<br />
+        Great summer.
+        <span>❤</span>
+      </div>
+
+      <div class="profile-mini">
+        <div class="avatar">A</div>
+        <div>
+          <p>Hello, Addison! 👋</p>
+          <p>View Profile ›</p>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div></div>
+        <section class="brand" aria-label="MADDY branding">
+          <h1>M.A.D.D.Y.<span>🌺</span></h1>
+          <p>Members Association for Drinks, Dining &amp; Yapping</p>
+          <div class="script">Official Summer Social Calendar</div>
+        </section>
+        <div class="header-actions">
+          <div class="bell" aria-label="3 notifications">♧</div>
+          <button class="primary-btn" id="openEventModal">＋ Propose Event</button>
+        </div>
+      </header>
+
+      <section class="card calendar-card" aria-label="Monthly calendar">
+        <div class="calendar-head">
+          <div class="month-controls">
+            <button class="arrow-btn" id="prevMonth" aria-label="Previous month">‹</button>
+            <h2 class="month-title" id="monthTitle">June 2026</h2>
+            <button class="arrow-btn" id="nextMonth" aria-label="Next month">›</button>
+          </div>
+          <div class="view-controls">
+            <button class="ghost-btn" id="todayBtn">Today</button>
+            <select class="ghost-btn" id="viewSelect" aria-label="Calendar view">
+              <option>Month</option>
+              <option>Week</option>
+              <option>Agenda</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="calendar-grid" id="calendarGrid"></div>
+
+        <div class="legend">
+          <span class="legend-item"><span class="dot drinks-dot"></span> Drinks</span>
+          <span class="legend-item"><span class="dot dining-dot"></span> Dining</span>
+          <span class="legend-item"><span class="dot daytrip-dot"></span> Day Trips</span>
+          <span class="legend-item"><span class="dot yapping-dot"></span> Yapping</span>
+          <a href="#" class="see-all">See all events →</a>
+        </div>
+      </section>
+
+      <section class="feature-grid" aria-label="Website features">
+        <article class="feature-card">
+          <div>
+            <div class="feature-icon">▣</div>
+            <h3>Add to Calendar</h3>
+            <p>Sync events to your personal calendar.</p>
+          </div>
+          <button class="tiny-btn" data-toast="Calendar sync coming soon!">Add</button>
+        </article>
+        <article class="feature-card">
+          <div>
+            <div class="feature-icon">☑</div>
+            <h3>RSVP</h3>
+            <p>Let us know if you’re in, maybe, or out.</p>
+          </div>
+          <button class="tiny-btn" data-toast="RSVP saved!">RSVP Now</button>
+        </article>
+        <article class="feature-card">
+          <div>
+            <div class="feature-icon">☼</div>
+            <h3>Suggest an Event</h3>
+            <p>Have an idea? The association is listening.</p>
+          </div>
+          <button class="tiny-btn" id="openEventModal2">Suggest</button>
+        </article>
+        <article class="feature-card">
+          <div>
+            <div class="feature-icon">☏</div>
+            <h3>Group Chat</h3>
+            <p>Join the convo and begin yapping.</p>
+          </div>
+          <button class="tiny-btn" data-toast="Opening group chat…">Open Chat</button>
+        </article>
+        <article class="feature-card">
+          <div>
+            <div class="feature-icon">◉</div>
+            <h3>Photo Album</h3>
+            <p>Relive the memories from past events.</p>
+          </div>
+          <button class="tiny-btn" data-toast="Photo album opened!">View Album</button>
+        </article>
+        <article class="feature-card">
+          <div>
+            <div class="feature-icon">♕</div>
+            <h3>Outfit / Theme</h3>
+            <p>See the vibe and dress for the occasion.</p>
+          </div>
+          <button class="tiny-btn" data-toast="Theme notes opened!">View Notes</button>
+        </article>
+      </section>
+    </main>
+
+    <aside class="right-panel" aria-label="Social widgets">
+      <section class="side-card">
+        <h3>RSVP Tracker</h3>
+        <div class="rsvp-counts">
+          <div><strong class="yes" id="yesCount">28</strong><span>Yes</span></div>
+          <div><strong class="maybe" id="maybeCount">7</strong><span>Maybe</span></div>
+          <div><strong class="no" id="noCount">4</strong><span>No</span></div>
+        </div>
+        <p class="mini-meta">♡ 39 Total Responses</p>
+      </section>
+
+      <section class="side-card weather">
+        <h3>Weather in Houston</h3>
+        <div class="weather-content">
+          <div class="sun">☀</div>
+          <div>
+            <strong>88°F</strong>
+            <p>Sunny</p>
+            <p class="mini-meta" style="text-align:left;margin-top:4px;">H: 92° · L: 72°</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="side-card">
+        <h3>Group Poll</h3>
+        <p><strong>Which day trip is next?</strong></p>
+        <label class="poll-option"><input type="radio" name="trip" /> Austin Float Trip</label>
+        <label class="poll-option"><input type="radio" name="trip" /> Beach Day in Surfside</label>
+        <label class="poll-option"><input type="radio" name="trip" /> Brunch in Waco</label>
+        <div class="poll-actions">
+          <button class="vote-btn" id="voteBtn">Vote</button>
+          <a href="#" class="see-all">View all polls →</a>
+        </div>
+      </section>
+
+      <section class="side-card">
+        <h3>Next Up</h3>
+        <div class="next-up">
+          <div class="event-image">🌴</div>
+          <div>
+            <h4>Galveston Day Trip 🌴</h4>
+            <p class="mini-meta" style="text-align:left;">Sat, Jun 20 · 9:00 AM</p>
+            <p class="mini-meta" style="text-align:left;">Meet at 8:30 AM<br />Central Market</p>
+            <span class="badge">☑ 12 Going</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="side-card">
+        <h3>Yap Board 💬</h3>
+        <div id="yapList">
+          <div class="yap-entry">
+            <div class="avatar small">S</div>
+            <div><strong>Sophie <span class="mini-meta">2h ago</span></strong><p>Can’t wait for Galveston! ☀️</p></div>
+            <span>♡</span>
+          </div>
+          <div class="yap-entry">
+            <div class="avatar small">M</div>
+            <div><strong>Maddie <span class="mini-meta">5h ago</span></strong><p>Anyone know a cute sushi spot we should try??</p></div>
+            <span>♡</span>
+          </div>
+        </div>
+        <div class="yap-input">
+          <input id="yapInput" placeholder="Add a note..." />
+          <button class="vote-btn" id="postYap">Post</button>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <button class="active"><span>▣</span><span>Calendar</span></button>
+    <button><span>☆</span><span>Events</span></button>
+    <button><span>▥</span><span>Polls</span></button>
+    <button><span>▧</span><span>Gallery</span></button>
+    <button><span>◉</span><span>Profile</span></button>
+  </nav>
+
+  <div class="modal-backdrop" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <h2 id="modalTitle">Propose an Event</h2>
+          <p class="mini-meta" style="text-align:left;">Submit for association review, aka the group chat.</p>
+        </div>
+        <button class="close-btn" id="closeEventModal" aria-label="Close">×</button>
+      </div>
+
+      <form id="eventForm" class="form-grid">
+        <div class="field full">
+          <label for="eventName">Event Name</label>
+          <input id="eventName" required placeholder="e.g., Sunset Spritz Night" />
+        </div>
+        <div class="field">
+          <label for="eventDate">Date</label>
+          <input id="eventDate" type="date" required value="2026-06-24" />
+        </div>
+        <div class="field">
+          <label for="eventTime">Time</label>
+          <input id="eventTime" type="time" required value="19:00" />
+        </div>
+        <div class="field">
+          <label for="eventCategory">Category</label>
+          <select id="eventCategory">
+            <option value="drinks">Drinks</option>
+            <option value="dining">Dining</option>
+            <option value="daytrip">Day Trips</option>
+            <option value="yapping">Yapping</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="eventLocation">Location</label>
+          <input id="eventLocation" placeholder="TBD, patio, pool, etc." />
+        </div>
+        <div class="field full">
+          <label for="eventNote">Notes</label>
+          <textarea id="eventNote" placeholder="Dress code, what to bring, agenda items..."></textarea>
+        </div>
+        <div class="field full">
+          <button class="primary-btn" type="submit">Submit Event Proposal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Saved!</div>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/weather.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/rsvp.js"></script>
+  <script src="js/polls.js"></script>
+  <script src="js/yaps.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

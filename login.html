@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>M.A.D.D.Y. | Login</title>
+    <link href="styles/maddy.css" rel="stylesheet" />
+</head>
+<body style="display:grid;place-items:center;min-height:100vh;">
+    <div class="modal" style="width:min(420px,100%);margin:18px;">
+        <div class="modal-head">
+            <div>
+                <h2>M.A.D.D.Y. 🌺</h2>
+                <p class="mini-meta" style="text-align:left;">Members Association for Drinks, Dining &amp; Yapping</p>
+            </div>
+        </div>
+
+        <form id="authForm" class="form-grid">
+            <div class="field full">
+                <label for="username">Username</label>
+                <input id="username" required placeholder="your username" autocomplete="username" />
+            </div>
+            <div class="field full">
+                <label for="password">Password</label>
+                <input id="password" type="password" required placeholder="••••••••" autocomplete="current-password" />
+            </div>
+            <div class="field full">
+                <button class="primary-btn" type="submit" id="submitBtn">Login</button>
+            </div>
+            <p id="authError" class="mini-meta" style="color:#ee3f2d;display:none;text-align:left;"></p>
+        </form>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const BASE_URL = "https://api.jackbrennan.dev";
+        let mode = "login";
+
+        // If already logged in skip to app
+        if (localStorage.getItem("token")) {
+            window.location.href = "/maddy.html";
+        }
+
+        document.getElementById("showLogin").addEventListener("click", () => {
+            mode = "login";
+            document.getElementById("submitBtn").textContent = "Login";
+            document.getElementById("showLogin").style.fontWeight = "800";
+            document.getElementById("showRegister").style.fontWeight = "400";
+        });
+
+        document.getElementById("showRegister").addEventListener("click", () => {
+            mode = "register";
+            document.getElementById("submitBtn").textContent = "Create Account";
+            document.getElementById("showLogin").style.fontWeight = "400";
+            document.getElementById("showRegister").style.fontWeight = "800";
+        });
+
+        document.getElementById("authForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+            const errEl = document.getElementById("authError");
+            errEl.style.display = "none";
+
+            try {
+                const res = await fetch(`${BASE_URL}/${mode}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                if (!res.ok) {
+                    errEl.textContent = await res.text();
+                    errEl.style.display = "block";
+                    return;
+                }
+
+                if (mode === "login") {
+                    const data = await res.json();
+                    localStorage.setItem("token", data.token);
+                    window.location.href = "/maddy.html";
+                } else {
+                    // Auto login after register
+                    const loginRes = await fetch(`${BASE_URL}/login`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ username, password }),
+                    });
+                    const data = await loginRes.json();
+                    localStorage.setItem("token", data.token);
+                    window.location.href = "/maddy.html";
+                }
+            } catch (err) {
+                errEl.textContent = "Something went wrong, try again.";
+                errEl.style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>
