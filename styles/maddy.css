@@ -44,12 +44,10 @@ button {
     display: grid;
     grid-template-columns: 250px minmax(0, 1fr) 330px;
     gap: 18px;
-    min-height: 100vh;
     padding: 0 22px 22px 0;
 }
 
 .sidebar {
-    min-height: 100vh;
     padding: 28px 20px;
     background: linear-gradient(180deg, rgba(202, 210, 197, 0.84), rgba(236, 234, 209, 0.9));
     border-right: 1px solid rgba(36, 39, 43, 0.08);
@@ -628,6 +626,11 @@ main {
     border-radius: 12px;
     padding: 9px 22px;
     font-weight: 800;
+
+    &:disabled {
+        background: #FD965E;
+        cursor: not-allowed;
+    }
 }
 
 .next-up {

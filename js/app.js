@@ -12,7 +12,7 @@ function colorFromName(name) {
 
 function avatarUrl(displayName) {
     const color = colorFromName(displayName);
-    return `https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(displayName)}&backgroundColor=${color}`;
+    return `https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(displayName[0])}&backgroundColor=${color}`;
 }
 
 function renderProfile(user) {
@@ -20,7 +20,7 @@ function renderProfile(user) {
 
     // Sidebar avatar — swap letter for dicebear img
     const avatarEl = document.querySelector(".profile-mini .avatar");
-    avatarEl.innerHTML = `<img src="${avatarUrl(name)}" width="42" height="42" style="border-radius:50%;display:block;" alt="${name}" />`;
+    avatarEl.innerHTML = `<img src="${avatarUrl(name)}" width="38" height="38" style="border-radius:50%;display:block;margin-left:auto;margin-right-auto;" alt="${name}" />`;
 
     // Greeting
     const greeting = document.querySelector(".profile-mini p:first-child");
