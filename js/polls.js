@@ -7,27 +7,33 @@ async function initPolls() {
 
     activePollId = data.poll.id?.$oid || data.poll.id;
 
-    // Render question
-    document.querySelector(".side-card:has(#voteBtn) p strong").textContent = data.poll.question;
-
-    // Render options
-    const container = document.querySelector(".side-card:has(#voteBtn)");
-    container.querySelectorAll(".poll-option").forEach(el => el.remove());
+    document.getElementById('pollQuestion').textContent = data.poll.question;
+    const container = document.getElementById('pollCard');
+    container.querySelectorAll('.poll-option-row').forEach(el => el.remove());
 
     const voteBtn = document.getElementById("voteBtn");
 
     data.poll.options.forEach(option => {
         const tally = data.tally.find(t => t.option_id === option.id);
         const count = tally ? tally.count : 0;
+        const total = data.tally.reduce((s, t) => s + t.count, 0);
+        const pct   = total > 0 ? Math.round((count / total) * 100) : 0;
         const isYours = data.your_vote === option.id;
 
-        const label = document.createElement("label");
-        label.className = "poll-option";
-        label.innerHTML = `
-            <input type="radio" name="trip" value="${option.id}" ${isYours ? "checked" : ""}/>
-            ${option.label} <span class="mini-meta" style="margin-top:0;margin-left:auto;">${count} votes</span>
+        const row = document.createElement('div');
+        row.className = `poll-option-row${isYours ? ' selected' : ''}`;
+        row.dataset.optionId = option.id;
+        row.innerHTML = `
+            <div class="poll-radio"></div>
+            <span class="poll-option-label">${option.label}</span>
+            <div class="poll-bar-wrap"><div class="poll-bar" style="width:${pct}%"></div></div>
+            <span class="poll-count">${count}</span>
         `;
-        container.insertBefore(label, voteBtn.parentElement);
+        row.addEventListener('click', () => {
+            document.querySelectorAll('.poll-option-row').forEach(r => r.classList.remove('selected'));
+            row.classList.add('selected');
+        });
+        container.insertBefore(row, document.getElementById('voteBtn'));
     });
 
     // Disable if already voted
@@ -40,15 +46,12 @@ async function initPolls() {
 }
 
 async function castVote() {
-    const selected = document.querySelector('input[name="trip"]:checked');
-    if (!selected) { showToast("Pick an option first!"); return; }
-    if (!activePollId) return;
-
-    const res = await api.post(`/polls/${activePollId}/vote`, { option_id: selected.value });
+    const selected = document.querySelector('.poll-option-row.selected');
+    if (!selected) { showToast('Pick an option first!'); return; }
+    const res = await api.post(`/polls/${activePollId}/vote`, { option_id: selected.dataset.optionId });
     if (!res) return;
-    if (res.status === 409) { showToast("Already voted!"); return; }
-    if (!res.ok) { showToast("Vote failed"); return; }
-
-    showToast("Vote cast!");
-    await initPolls(); // re-render with updated tallies
+    if (res.status === 409) { showToast('Already voted!'); return; }
+    if (!res.ok) { showToast('Vote failed'); return; }
+    showToast('Vote cast!');
+    await initPolls();
 }

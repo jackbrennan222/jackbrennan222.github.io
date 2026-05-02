@@ -6,247 +6,336 @@
   <title>M.A.D.D.Y. | Summer Social Calendar</title>
   <link href="styles/maddy.css" rel="stylesheet" type="text/css" />
   <link rel="icon" type="images/x-icon" href="assets/favicon_io/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar" aria-label="Main navigation">
-      <div class="summer-illustration" aria-hidden="true">🏖️</div>
+  <div class="shell">
 
-      <nav class="nav">
-        <button class="active"><span class="nav-icon">⌂</span><span>Home</span></button>
-        <button><span class="nav-icon">▣</span><span>Calendar</span></button>
-        <button><span class="nav-icon">☆</span><span>Events</span></button>
-        <button><span class="nav-icon">▥</span><span>Polls</span></button>
-        <button><span class="nav-icon">▧</span><span>Gallery</span></button>
-        <button><span class="nav-icon">♡</span><span>Members</span></button>
-        <button><span class="nav-icon">ⓘ</span><span>About</span></button>
-      </nav>
-
-      <div class="quote-card">
-        Good friends.<br />
-        Good plans.<br />
-        Great summer.
-        <span>❤</span>
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+      <div class="brand-mark">
+        <span class="emoji">🌺</span>
+        <h1>M.A.D.D.Y.</h1>
+        <p>Members Association for<br>Drinks, Dining &amp; Yapping</p>
       </div>
 
-      <div class="profile-mini">
-        <div class="avatar">A</div>
-        <div>
-          <p>Hello, User! 👋</p>
-          <p>View Profile ›</p>
+      <nav class="nav">
+        <div class="nav-section-label">Main</div>
+        <button class="nav-item active" data-view="home">
+          <span class="nav-icon">⌂</span><span>Home</span>
+        </button>
+        <button class="nav-item" data-view="calendar">
+          <span class="nav-icon">▣</span><span>Calendar</span>
+        </button>
+        <button class="nav-item" data-view="events">
+          <span class="nav-icon">☆</span><span>Events</span>
+          <span class="nav-badge" id="eventCount">–</span>
+        </button>
+
+        <div class="nav-section-label">Social</div>
+        <button class="nav-item" data-view="polls">
+          <span class="nav-icon">▥</span><span>Polls</span>
+        </button>
+        <button class="nav-item" data-view="members">
+          <span class="nav-icon">♡</span><span>Members</span>
+        </button>
+
+        <div class="nav-section-label">Info</div>
+        <button class="nav-item" data-view="about">
+          <span class="nav-icon">ⓘ</span><span>About</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="profile-row" id="profileRow">
+          <div class="avatar" id="sidebarAvatar">?</div>
+          <div class="profile-info">
+            <div class="profile-name" id="sidebarName">Loading…</div>
+            <div class="profile-sub">View profile</div>
+          </div>
+          <button class="logout-btn" id="logoutBtn" title="Logout">↩</button>
         </div>
       </div>
     </aside>
 
+    <!-- ── MAIN ── -->
     <main>
-      <header class="topbar">
-        <div></div>
-        <section class="brand" aria-label="MADDY branding">
-          <h1>M.A.D.D.Y.<span>🌺</span></h1>
-          <p>Members Association for Drinks, Dining &amp; Yapping</p>
-          <div class="script">Official Summer Social Calendar</div>
-        </section>
-        <div class="header-actions">
-          <div class="bell" aria-label="3 notifications">♧</div>
-          <button class="primary-btn" id="openEventModal">＋ Propose Event</button>
+      <!-- Top bar -->
+      <div class="topbar">
+        <h2 class="page-title" id="pageTitle">Good morning <span id="greetingName">–</span> 👋</h2>
+        <div class="topbar-actions">
+          <button class="primary-btn" id="proposeBtn">＋ Propose Event</button>
         </div>
-      </header>
+      </div>
 
-      <section class="card calendar-card" aria-label="Monthly calendar">
-        <div class="calendar-head">
-          <div class="month-controls">
-            <button class="arrow-btn" id="prevMonth" aria-label="Previous month">‹</button>
-            <h2 class="month-title" id="monthTitle">June 2026</h2>
-            <button class="arrow-btn" id="nextMonth" aria-label="Next month">›</button>
+      <!-- ── HOME ── -->
+      <div class="view active" id="view-home">
+        <div class="home-grid">
+          <!-- Next event -->
+          <div class="card next-event-card" id="nextEventCard">
+            <div class="next-event-emoji" id="nextEventEmoji">🌴</div>
+            <div class="next-event-info">
+              <div class="card-title">Next Up</div>
+              <h2 id="nextEventTitle">Loading…</h2>
+              <p class="next-event-meta" id="nextEventMeta"></p>
+              <span class="badge" id="nextEventBadge">Loading</span>
+            </div>
           </div>
-          <div class="view-controls">
-            <button class="ghost-btn" id="todayBtn">Today</button>
-            <select class="ghost-btn" id="viewSelect" aria-label="Calendar view">
-              <option>Month</option>
-              <option>Week</option>
-              <option>Agenda</option>
-            </select>
+
+          <!-- Mini calendar -->
+          <div class="card mini-cal-card">
+            <div class="mini-cal-head">
+              <h3 id="miniCalTitle">June 2026</h3>
+              <div style="display:flex;gap:4px;">
+                <button class="arrow-btn" id="miniPrev">‹</button>
+                <button class="arrow-btn" id="miniNext">›</button>
+              </div>
+            </div>
+            <div class="mini-cal-grid" id="miniCalGrid"></div>
+          </div>
+
+          <!-- Quick stats -->
+          <div class="card stats-card">
+            <div class="card-title">This Summer</div>
+            <div class="stat-row"><span>Events planned</span><span class="stat-val" id="statEvents">–</span></div>
+            <div class="stat-row"><span>Members going</span><span class="stat-val" id="statYes">–</span></div>
+            <div class="stat-row"><span>Yaps posted</span><span class="stat-val" id="statYaps">–</span></div>
+            <div class="stat-row"><span>Polls active</span><span class="stat-val">1</span></div>
+          </div>
+
+          <!-- Upcoming list -->
+          <div class="card upcoming-card" style="display:flex;flex-direction:column;">
+            <div class="card-title">Upcoming Events</div>
+            <div class="upcoming-list" id="upcomingList"></div>
           </div>
         </div>
+      </div>
 
-        <div class="calendar-grid" id="calendarGrid"></div>
-
-        <div class="legend">
-          <span class="legend-item"><span class="dot drinks-dot"></span> Drinks</span>
-          <span class="legend-item"><span class="dot dining-dot"></span> Dining</span>
-          <span class="legend-item"><span class="dot daytrip-dot"></span> Day Trips</span>
-          <span class="legend-item"><span class="dot yapping-dot"></span> Yapping</span>
-          <a href="#" class="see-all">See all events →</a>
+      <!-- ── CALENDAR ── -->
+      <div class="view" id="view-calendar">
+        <div class="cal-view-header">
+          <div class="cal-month-nav">
+            <button class="arrow-btn" id="calPrev">‹</button>
+            <h2 class="cal-month-title" id="calTitle">June 2026</h2>
+            <button class="arrow-btn" id="calNext">›</button>
+          </div>
+          <div class="cal-controls">
+            <button class="ghost-btn" id="calTodayBtn">Today</button>
+          </div>
         </div>
-      </section>
+        <div class="cal-grid-wrap">
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+        <div class="cal-legend">
+          <span><span class="legend-dot drinks"></span>Drinks</span>
+          <span><span class="legend-dot dining"></span>Dining</span>
+          <span><span class="legend-dot daytrip"></span>Day Trips</span>
+          <span><span class="legend-dot yapping"></span>Yapping</span>
+        </div>
+      </div>
 
-      <section class="feature-grid" aria-label="Website features">
-        <article class="feature-card">
-          <div>
-            <div class="feature-icon">▣</div>
-            <h3>Add to Calendar</h3>
-            <p>Sync events to your personal calendar.</p>
+      <!-- ── EVENTS ── -->
+      <div class="view" id="view-events">
+        <div class="events-filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="drinks">🍹 Drinks</button>
+          <button class="filter-btn" data-filter="dining">🍽️ Dining</button>
+          <button class="filter-btn" data-filter="daytrip">🌴 Day Trips</button>
+          <button class="filter-btn" data-filter="yapping">💬 Yapping</button>
+        </div>
+        <div class="events-grid" id="eventsGrid"></div>
+      </div>
+
+      <!-- ── POLLS ── -->
+      <div class="view" id="view-polls">
+        <div class="polls-layout">
+          <div class="poll-card" id="pollCard">
+            <div class="card-title">Active Poll</div>
+            <p class="poll-question" id="pollQuestion">Loading…</p>
+            <div id="pollOptions"></div>
+            <button class="vote-btn" id="voteBtn">Cast Vote</button>
           </div>
-          <button class="tiny-btn" data-toast="Calendar sync coming soon!">Add</button>
-        </article>
-        <article class="feature-card">
-          <div>
-            <div class="feature-icon">☑</div>
-            <h3>RSVP</h3>
-            <p>Let us know if you’re in, maybe, or out.</p>
+          <div class="poll-card">
+            <div class="card-title">Past Polls</div>
+            <div class="past-polls">
+              <div class="past-poll-winner">Nothing yet...</div>
+            </div>
           </div>
-          <button class="tiny-btn" data-toast="RSVP saved!">RSVP Now</button>
-        </article>
-        <article class="feature-card">
-          <div>
-            <div class="feature-icon">☼</div>
-            <h3>Suggest an Event</h3>
-            <p>Have an idea? The association is listening.</p>
+        </div>
+      </div>
+
+      <!-- ── MEMBERS ── -->
+      <div class="view" id="view-members">
+        <div class="members-grid" id="membersGrid">
+          <!-- populated by js -->
+        </div>
+      </div>
+
+      <!-- ── ABOUT ── -->
+      <div class="view" id="view-about">
+        <div class="about-layout">
+          <div class="about-hero">
+            <h2>M.A.D.D.Y.</h2>
+            <p style="font-family:var(--serif);font-style:italic;font-size:17px;color:#4f4a43;">Members Association for<br>Drinks, Dining &amp; Yapping</p>
+            <p>An unofficial summer social club for the people who make every Wednesday feel like Friday. We plan. We eat. We drink. We yap — endlessly.</p>
+            <p style="font-family:var(--serif);font-style:italic;color:var(--orange);font-size:18px;">Good friends. Good plans. Great summer. ❤</p>
           </div>
-          <button class="tiny-btn" id="openEventModal2">Suggest</button>
-        </article>
-        <article class="feature-card">
-          <div>
-            <div class="feature-icon">☏</div>
-            <h3>Group Chat</h3>
-            <p>Join the convo and begin yapping.</p>
+          <div class="about-rules">
+            <div class="card-title" style="padding:0 2px;">The Association Rules</div>
+            <div class="rule-card">
+              <div class="rule-num">1</div>
+              <div><h4>Show Up</h4><p>RSVP yes and actually appear. Flaking without notice is a violation of association code.</p></div>
+            </div>
+            <div class="rule-card">
+              <div class="rule-num">2</div>
+              <div><h4>Yap Freely</h4><p>No topic is off limits on the yap board. Oversharing is encouraged. Undersharing is suspicious.</p></div>
+            </div>
+            <div class="rule-card">
+              <div class="rule-num">3</div>
+              <div><h4>Propose Boldly</h4><p>Have an idea? Submit it. Bad ideas welcome. The association votes; the group decides.</p></div>
+            </div>
+            <div class="rule-card">
+              <div class="rule-num">4</div>
+              <div><h4>Dress for the Vibe</h4><p>Check the event theme. There's no such thing as overdressed for a MADDY event.</p></div>
+            </div>
+            <div class="rule-card">
+              <div class="rule-num">5</div>
+              <div><h4>Vote on the Polls</h4><p>Democracy is the backbone of this association. Every voice counts, especially yours.</p></div>
+            </div>
           </div>
-          <button class="tiny-btn" data-toast="Opening group chat…">Open Chat</button>
-        </article>
-        <article class="feature-card">
-          <div>
-            <div class="feature-icon">◉</div>
-            <h3>Photo Album</h3>
-            <p>Relive the memories from past events.</p>
-          </div>
-          <button class="tiny-btn" data-toast="Photo album opened!">View Album</button>
-        </article>
-        <article class="feature-card">
-          <div>
-            <div class="feature-icon">♕</div>
-            <h3>Outfit / Theme</h3>
-            <p>See the vibe and dress for the occasion.</p>
-          </div>
-          <button class="tiny-btn" data-toast="Theme notes opened!">View Notes</button>
-        </article>
-      </section>
+        </div>
+      </div>
     </main>
 
-    <aside class="right-panel" aria-label="Social widgets">
-      <section class="side-card">
-        <h3>RSVP Tracker</h3>
-        <div class="rsvp-counts">
-          <div><strong class="yes" id="yesCount">28</strong><span>Yes</span></div>
-          <div><strong class="maybe" id="maybeCount">7</strong><span>Maybe</span></div>
-          <div><strong class="no" id="noCount">4</strong><span>No</span></div>
-        </div>
-        <p class="mini-meta">♡ 39 Total Responses</p>
-      </section>
+    <!-- ── RIGHT PANEL ── -->
+    <aside class="right-panel">
 
-      <section class="side-card weather">
-        <h3>Weather in Houston</h3>
-        <div class="weather-content">
-          <div class="sun">☀</div>
+      <!-- Weather -->
+      <div class="side-card weather-card">
+        <div class="side-title">Houston Weather</div>
+        <div class="weather-row">
+          <div class="weather-icon" id="weatherIcon">☀</div>
           <div>
-            <strong>--°F</strong>
-            <p>-----</p>
-            <p class="mini-meta" style="text-align:left;margin-top:4px;">H: --° · L: --°</p>
+            <div class="weather-temp" id="weatherTemp">–°F</div>
+            <div class="weather-desc" id="weatherDesc">Loading…</div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <section class="side-card">
-        <h3>Group Poll</h3>
-        <p><strong>Which day trip is next?</strong></p>
-        <label class="poll-option"><input type="radio" name="trip" /> Austin Float Trip</label>
-        <label class="poll-option"><input type="radio" name="trip" /> Beach Day in Surfside</label>
-        <label class="poll-option"><input type="radio" name="trip" /> Brunch in Waco</label>
-        <div class="poll-actions">
-          <button class="vote-btn" id="voteBtn">Vote</button>
-          <a href="#" class="see-all">View all polls →</a>
-        </div>
-      </section>
-
-      <section class="side-card">
-        <h3>Next Up</h3>
-        <div class="next-up">
-          <div class="event-image">🌴</div>
+      <!-- Next Up -->
+      <div class="side-card">
+        <div class="side-title">Next Up</div>
+        <div class="next-up-item">
+          <div class="next-up-emoji" id="nextUpEmoji">🌴</div>
           <div>
-            <h4>Galveston Day Trip 🌴</h4>
-            <p class="mini-meta" style="text-align:left;">Sat, Jun 20 · 9:00 AM</p>
-            <p class="mini-meta" style="text-align:left;">Meet at 8:30 AM<br />Central Market</p>
-            <span class="badge">☑ 12 Going</span>
+            <div class="next-up-title" id="nextUpTitle">Loading…</div>
+            <div class="next-up-meta" id="nextUpMeta"></div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <section class="side-card">
-        <h3>Yap Board 💬</h3>
-        <div id="yapList"></div>
-        <div class="yap-input">
-          <input id="yapInput" placeholder="Add a note..." />
-          <button class="vote-btn" id="postYap">Post</button>
+      <!-- Yap Board -->
+      <div class="side-card" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+        <div class="side-title">Yap Board 💬</div>
+        <div class="yap-list" id="yapList"></div>
+        <div class="yap-input-row">
+          <input class="yap-input" id="yapInput" placeholder="Add a note…" maxlength="280" />
+          <button class="yap-post-btn" id="postYap">Post</button>
         </div>
-      </section>
+      </div>
+
     </aside>
   </div>
 
-  <nav class="mobile-nav" aria-label="Mobile navigation">
-    <button class="active"><span>▣</span><span>Calendar</span></button>
-    <button><span>☆</span><span>Events</span></button>
-    <button><span>▥</span><span>Polls</span></button>
-    <button><span>▧</span><span>Gallery</span></button>
-    <button><span>◉</span><span>Profile</span></button>
+  <!-- Mobile nav -->
+  <nav class="mobile-nav">
+    <button class="active" data-view="home"><span class="m-icon">⌂</span><span>Home</span></button>
+    <button data-view="calendar"><span class="m-icon">▣</span><span>Calendar</span></button>
+    <button data-view="events"><span class="m-icon">☆</span><span>Events</span></button>
+    <button data-view="polls"><span class="m-icon">▥</span><span>Polls</span></button>
+    <button data-view="members"><span class="m-icon">♡</span><span>Members</span></button>
   </nav>
 
-  <div class="modal-backdrop" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <!-- Event Modal -->
+  <div class="modal-backdrop" id="eventModal">
     <div class="modal">
       <div class="modal-head">
         <div>
-          <h2 id="modalTitle">Propose an Event</h2>
-          <p class="mini-meta" style="text-align:left;">Submit for association review, aka the group chat.</p>
+          <h2>Propose an Event</h2>
+          <p>Submit for association review, aka the group chat.</p>
         </div>
-        <button class="close-btn" id="closeEventModal" aria-label="Close">×</button>
+        <button class="close-btn" id="closeModal">×</button>
       </div>
-
       <form id="eventForm" class="form-grid">
         <div class="field full">
-          <label for="eventName">Event Name</label>
+          <label>Event Name</label>
           <input id="eventName" required placeholder="e.g., Sunset Spritz Night" />
         </div>
         <div class="field">
-          <label for="eventDate">Date</label>
+          <label>Date</label>
           <input id="eventDate" type="date" required value="2026-06-24" />
         </div>
         <div class="field">
-          <label for="eventTime">Time</label>
+          <label>Time</label>
           <input id="eventTime" type="time" required value="19:00" />
         </div>
         <div class="field">
-          <label for="eventCategory">Category</label>
+          <label>Category</label>
           <select id="eventCategory">
-            <option value="drinks">Drinks</option>
-            <option value="dining">Dining</option>
-            <option value="daytrip">Day Trips</option>
-            <option value="yapping">Yapping</option>
+            <option value="drinks">🍹 Drinks</option>
+            <option value="dining">🍽️ Dining</option>
+            <option value="daytrip">🌴 Day Trip</option>
+            <option value="yapping">💬 Yapping</option>
           </select>
         </div>
         <div class="field">
-          <label for="eventLocation">Location</label>
-          <input id="eventLocation" placeholder="TBD, patio, pool, etc." />
+          <label>Location</label>
+          <input id="eventLocation" placeholder="TBD, patio, pool…" />
         </div>
         <div class="field full">
-          <label for="eventNote">Notes</label>
-          <textarea id="eventNote" placeholder="Dress code, what to bring, agenda items..."></textarea>
+          <label>Notes</label>
+          <textarea id="eventNote" placeholder="Dress code, what to bring…"></textarea>
         </div>
         <div class="field full">
-          <button class="primary-btn" type="submit">Submit Event Proposal</button>
+          <button class="primary-btn" type="submit" style="width:100%;justify-content:center;">Submit Proposal</button>
         </div>
       </form>
     </div>
   </div>
 
-  <div class="toast" id="toast">Saved!</div>
+  <div class="modal-backdrop" id="eventDetailModal">
+    <div class="modal">
+      <div class="modal-head">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="next-event-emoji" id="detailEmoji" style="font-size:32px;width:56px;height:56px;border-radius:14px;background:rgba(236,234,209,0.6);display:grid;place-items:center;flex-shrink:0;"></div>
+          <div>
+            <h2 id="detailTitle">Event</h2>
+            <p id="detailMeta" style="font-size:13px;color:var(--muted);margin-top:3px;"></p>
+          </div>
+        </div>
+        <button class="close-btn" id="closeDetailModal">×</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+        <div id="detailLocation" style="font-size:13px;color:var(--muted);display:none;">📍 <span></span></div>
+        <div id="detailNotes" style="font-size:13px;color:var(--ink);line-height:1.5;background:rgba(236,234,209,0.4);border-radius:10px;padding:10px 12px;display:none;"></div>
+      </div>
+
+      <div style="border-top:1px solid var(--line);padding-top:16px;">
+        <div class="side-title" style="margin-bottom:10px;">RSVP · <span id="detailRsvpCounts" style="color:var(--muted);font-size:10px;"></span></div>
+        <div style="display:flex;gap:8px;">
+          <button class="rsvp-chip yes-chip"   data-status="yes"   id="detailYes">✓ Yes</button>
+          <button class="rsvp-chip maybe-chip" data-status="maybe" id="detailMaybe">? Maybe</button>
+          <button class="rsvp-chip no-chip"    data-status="no"    id="detailNo">✕ No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/weather.js"></script>
@@ -255,5 +344,81 @@
   <script src="js/polls.js"></script>
   <script src="js/yaps.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    // ── NAVIGATION ──
+    const views = document.querySelectorAll('.view');
+    const navItems = document.querySelectorAll('.nav-item[data-view]');
+    const mobileNavBtns = document.querySelectorAll('.mobile-nav button[data-view]');
+
+    const pageTitles = {
+      home:     () => `Good ${getGreeting()}, <span id="greetingName">${window._userName || ''}</span> 👋`,
+      calendar: () => 'Calendar',
+      events:   () => 'Events',
+      polls:    () => 'Polls',
+      members:  () => 'Members',
+      about:    () => 'About M.A.D.D.Y.',
+    };
+
+    function getGreeting() {
+      const h = new Date().getHours();
+      if (h < 12) return 'morning';
+      if (h < 17) return 'afternoon';
+      return 'evening';
+    }
+
+    function navigate(viewName) {
+      views.forEach(v => v.classList.remove('active'));
+      document.getElementById(`view-${viewName}`)?.classList.add('active');
+      navItems.forEach(b => b.classList.toggle('active', b.dataset.view === viewName));
+      mobileNavBtns.forEach(b => b.classList.toggle('active', b.dataset.view === viewName));
+      document.getElementById('pageTitle').innerHTML = pageTitles[viewName]?.() || viewName;
+    }
+
+    navItems.forEach(btn => btn.addEventListener('click', () => navigate(btn.dataset.view)));
+    mobileNavBtns.forEach(btn => btn.addEventListener('click', () => navigate(btn.dataset.view)));
+
+    // ── MODAL ──
+    function openModal() { document.getElementById('eventModal').classList.add('show'); }
+    function closeModal() { document.getElementById('eventModal').classList.remove('show'); }
+    document.getElementById('proposeBtn').addEventListener('click', openModal);
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('eventModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    document.getElementById('closeDetailModal').addEventListener('click', () => {
+        document.getElementById('eventDetailModal').classList.remove('show');
+    });
+    document.getElementById('eventDetailModal').addEventListener('click', e => {
+        if (e.target === e.currentTarget)
+            document.getElementById('eventDetailModal').classList.remove('show');
+    });
+
+    // ── TOAST ──
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    // ── EVENT FILTERS ──
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterEvents(btn.dataset.filter);
+      });
+    });
+
+    function filterEvents(cat) {
+      document.querySelectorAll('#eventsGrid .event-card').forEach(card => {
+        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+      });
+    }
+
+    // ── LOGOUT ──
+    document.getElementById('logoutBtn').addEventListener('click', () => logout());
+  </script>
 </body>
 </html>

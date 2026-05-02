@@ -8,7 +8,7 @@ async function login(username, password) {
     if (!res.ok) throw new Error(await res.text());
 
     const data = await res.json();
-    setToken(data.token);
+    setTokenPair(data.token);
     return data;
 }
 

@@ -4,8 +4,27 @@ function getToken() {
     return localStorage.getItem("token");
 }
 
-function setToken(token) {
-    localStorage.setItem("token", token);
+function setTokenPair(data) {
+    localStorage.setItem('token', data.token);
+    if (data.refresh_token) {
+        localStorage.setItem('refreshToken', data.refresh_token);
+    }
+}
+
+async function tryRefresh() {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) return false;
+    const res = await fetch(`${BASE_URL}/refresh`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${refreshToken}`,
+        },
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    setTokenPair(data);
+    return true;
 }
 
 function clearToken() {

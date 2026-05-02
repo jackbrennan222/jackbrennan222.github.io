@@ -30,16 +30,18 @@ function prependYap(yap, prepend = true) {
     entry.className = "yap-entry";
     entry.dataset.id = id;
     entry.innerHTML = `
-        <img src="https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(yap.username)}&backgroundColor=${color}"
-             width="32" height="32" style="border-radius:50%;" alt="${initial}" />
-        <div>
-            <strong>${yap.username} <span class="mini-meta">${timeAgo}</span></strong>
-            <p></p>
+        <div class="yap-avatar">
+            <img src="https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(yap.username[0])}&backgroundColor=${color}"
+                width="30" height="30" alt="${yap.username}" />
         </div>
-        <button class="like-btn" data-id="${id}" style="background:none;color:var(--muted);font-size:13px;">${hasLiked ? '♥' : '♡'} ${likeCount}</button>
+        <div>
+            <div class="yap-name">${yap.username}<span class="yap-time">${timeAgo}</span></div>
+            <div class="yap-text"></div>
+        </div>
+        <button class="like-btn" data-id="${id}">${hasLiked ? '♥' : '♡'} ${likeCount}</button>
     `;
-    entry.querySelector("p").textContent = yap.text;
-    entry.querySelector(".like-btn").addEventListener("click", () => toggleLike(id, entry));
+    entry.querySelector('.yap-text').textContent = yap.text;
+    entry.querySelector('.like-btn').addEventListener('click', () => toggleLike(id, entry));
 
     if (prepend) {
         list.prepend(entry);

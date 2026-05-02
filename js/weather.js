@@ -32,8 +32,7 @@ async function initWeather() {
 
     const [icon, label] = describeWeather(w.weathercode, isDay);
 
-    document.querySelector(".weather .sun").textContent = icon;
-    document.querySelector(".weather strong").textContent = `${temp}°F`;
-    document.querySelector(".weather p").textContent = label;
-    document.querySelector(".weather .mini-meta").textContent = make_meta(high, low);
+    document.getElementById("weatherIcon").textContent = icon;
+    document.getElementById("weatherTemp").textContent = `${temp}°F`;
+    document.getElementById("weatherDesc").textContent = label + " " + make_meta(high, low);
 }
