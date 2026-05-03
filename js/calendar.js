@@ -80,7 +80,7 @@ function renderCalendar() {
         matching.forEach(event => {
             const pill = document.createElement("button");
             pill.className = `event-pill ${event.category}`;
-            pill.innerHTML = `${event.icon} ${event.title}<small>${event.time}</small>`;
+            pill.innerHTML = `<span class="pill-title">${event.icon} ${event.title}</span><small>${event.time}</small>`;
             pill.addEventListener("click", () => openRsvpModal(event));
             cell.appendChild(pill);
         });

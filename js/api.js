@@ -45,9 +45,13 @@ async function request(path, options = {}) {
     });
 
     if (res.status === 401) {
-        clearToken();
-        window.location.href = "/login.html";
-        return;
+        const refreshed = await tryRefresh();
+        if (!refreshed) {
+            clearToken();
+            window.location.href = '/login.html';
+            return;
+        }
+        res = await fetch(`${BASE_URL}${path}`, buildOptions(options));
     }
 
     return res;
