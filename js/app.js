@@ -32,9 +32,7 @@ async function loadHomeStats() {
     const res = await api.get('/events');
     if (res && res.ok) {
         const events = await res.json();
-        document.getElementById('statEvents').textContent = events.length;
         document.getElementById('eventCount').textContent = events.length;
-        renderUpcomingList(events);
         renderNextEvent(events);
     }
 
@@ -42,7 +40,6 @@ async function loadHomeStats() {
     const yapRes = await api.get('/yaps?page=1&page_size=100');
     if (yapRes && yapRes.ok) {
         const yaps = await yapRes.json();
-        document.getElementById('statYaps').textContent = yaps.length;
     }
 }
 
@@ -64,12 +61,6 @@ function renderNextEvent(events) {
 
     const dateStr = next._d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
-    // Home card
-    document.getElementById('nextEventEmoji').textContent = next.icon;
-    document.getElementById('nextEventTitle').textContent = next.title;
-    document.getElementById('nextEventMeta').textContent = `${dateStr} · ${next.time}`;
-    document.getElementById('nextEventBadge').textContent = next.location || next.category;
-
     // Right panel next up
     document.getElementById('nextUpEmoji').textContent = next.icon;
     document.getElementById('nextUpTitle').textContent = next.title;
@@ -86,40 +77,6 @@ async function loadNextEventRsvp(eventId) {
     const res = await api.get(`/events/${eventId}/rsvps`);
     if (!res || !res.ok) return;
     const data = await res.json();
-    document.getElementById('statYes').textContent    = data.yes;
-}
-
-function renderUpcomingList(events) {
-    const now = new Date();
-    const catColors = {
-        drinks:  '#E2C4AA',
-        dining:  '#E2C4AA',
-        daytrip: '#C0DCE0',
-        yapping: '#CAD2C5',
-    };
-    const upcoming = events
-        .map(e => ({ ...e, _d: new Date(Number(e.date.$date.$numberLong)) }))
-        .filter(e => e._d >= now)
-        .sort((a, b) => a._d - b._d)
-        .slice(0, 8);
-
-    const list = document.getElementById('upcomingList');
-    list.innerHTML = '';
-    upcoming.forEach(event => {
-        const dateStr = event._d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        const item = document.createElement('div');
-        item.className = 'upcoming-item';
-        item.innerHTML = `
-            <div class="upcoming-dot" style="background:${catColors[event.category] || '#ccc'}"></div>
-            <div class="upcoming-item-info">
-                <div class="upcoming-item-title">${event.icon} ${event.title}</div>
-                <div class="upcoming-item-meta">${dateStr} · ${event.time}</div>
-            </div>
-            <span class="upcoming-item-cat" style="background:${catColors[event.category]}20;color:var(--muted)">${event.category}</span>
-        `;
-        item.addEventListener('click', () => navigate('calendar'));
-        list.appendChild(item);
-    });
 }
 
 async function loadMembers() {

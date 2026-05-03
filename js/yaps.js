@@ -20,7 +20,7 @@ async function fetchYaps() {
 function prependYap(yap, prepend = true) {
     const list = document.getElementById("yapList");
     const id = yap._id?.$oid || yap.id || "";
-    const hasLiked = yap.likes?.some(l => l.$oid === currentUser._id.$oid);
+    const hasLiked = currentUser && yap.likes?.some(l => l.$oid === currentUser._id?.$oid);
     const likeCount = yap.likes?.length ?? 0;
     const initial = (yap.username || "?")[0].toUpperCase();
     const color = colorFromName(yap.username || "");
@@ -79,13 +79,14 @@ function connectWs() {
     ws = new WebSocket(`wss://api.jackbrennan.dev/ws?token=${token}`);
 
     ws.onmessage = (event) => {
+        console.log('WS message:', event.data);
         const yap = JSON.parse(event.data);
         prependYap({
-            _id: yap._id,
+            _id: { $oid: yap.yap_id },
             username: yap.username,
             text: yap.text,
             likes: [],
-            created_at: yap.created_at,
+            created_at: { $date: { $numberLong: new Date(yap.created_at).getTime().toString() } },
         });
     };
 

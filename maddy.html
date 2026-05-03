@@ -26,9 +26,6 @@
         <button class="nav-item active" data-view="home">
           <span class="nav-icon">⌂</span><span>Home</span>
         </button>
-        <button class="nav-item" data-view="calendar">
-          <span class="nav-icon">▣</span><span>Calendar</span>
-        </button>
         <button class="nav-item" data-view="events">
           <span class="nav-icon">☆</span><span>Events</span>
           <span class="nav-badge" id="eventCount">–</span>
@@ -73,66 +70,23 @@
       <!-- ── HOME ── -->
       <div class="view active" id="view-home">
         <div class="home-grid">
-          <!-- Next event -->
-          <div class="card next-event-card" id="nextEventCard">
-            <div class="next-event-emoji" id="nextEventEmoji">🌴</div>
-            <div class="next-event-info">
-              <div class="card-title">Next Up</div>
-              <h2 id="nextEventTitle">Loading…</h2>
-              <p class="next-event-meta" id="nextEventMeta"></p>
-              <span class="badge" id="nextEventBadge">Loading</span>
-            </div>
-          </div>
-
-          <!-- Mini calendar -->
-          <div class="card mini-cal-card">
-            <div class="mini-cal-head">
-              <h3 id="miniCalTitle">June 2026</h3>
-              <div style="display:flex;gap:4px;">
-                <button class="arrow-btn" id="miniPrev">‹</button>
-                <button class="arrow-btn" id="miniNext">›</button>
+          <div class="card home-cal-card">
+            <div class="cal-view-header" style="margin-bottom:10px;">
+              <div class="cal-month-nav">
+                <button class="arrow-btn" id="homeCalPrev">‹</button>
+                <h3 class="cal-month-title" id="homeCalTitle">June 2026</h3>
+                <button class="arrow-btn" id="homeCalNext">›</button>
               </div>
+              <button class="ghost-btn" id="homeCalTodayBtn">Today</button>
             </div>
-            <div class="mini-cal-grid" id="miniCalGrid"></div>
+            <div class="cal-grid" id="homeCalGrid"></div>
+            <div class="cal-legend" style="padding-top:8px;">
+              <span><span class="legend-dot drinks"></span>Drinks</span>
+              <span><span class="legend-dot dining"></span>Dining</span>
+              <span><span class="legend-dot daytrip"></span>Day Trips</span>
+              <span><span class="legend-dot yapping"></span>Yapping</span>
+            </div>
           </div>
-
-          <!-- Quick stats -->
-          <div class="card stats-card">
-            <div class="card-title">This Summer</div>
-            <div class="stat-row"><span>Events planned</span><span class="stat-val" id="statEvents">–</span></div>
-            <div class="stat-row"><span>Members going</span><span class="stat-val" id="statYes">–</span></div>
-            <div class="stat-row"><span>Yaps posted</span><span class="stat-val" id="statYaps">–</span></div>
-            <div class="stat-row"><span>Polls active</span><span class="stat-val">1</span></div>
-          </div>
-
-          <!-- Upcoming list -->
-          <div class="card upcoming-card" style="display:flex;flex-direction:column;">
-            <div class="card-title">Upcoming Events</div>
-            <div class="upcoming-list" id="upcomingList"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── CALENDAR ── -->
-      <div class="view" id="view-calendar">
-        <div class="cal-view-header">
-          <div class="cal-month-nav">
-            <button class="arrow-btn" id="calPrev">‹</button>
-            <h2 class="cal-month-title" id="calTitle">June 2026</h2>
-            <button class="arrow-btn" id="calNext">›</button>
-          </div>
-          <div class="cal-controls">
-            <button class="ghost-btn" id="calTodayBtn">Today</button>
-          </div>
-        </div>
-        <div class="cal-grid-wrap">
-          <div class="cal-grid" id="calGrid"></div>
-        </div>
-        <div class="cal-legend">
-          <span><span class="legend-dot drinks"></span>Drinks</span>
-          <span><span class="legend-dot dining"></span>Dining</span>
-          <span><span class="legend-dot daytrip"></span>Day Trips</span>
-          <span><span class="legend-dot yapping"></span>Yapping</span>
         </div>
       </div>
 
@@ -252,7 +206,6 @@
   <!-- Mobile nav -->
   <nav class="mobile-nav">
     <button class="active" data-view="home"><span class="m-icon">⌂</span><span>Home</span></button>
-    <button data-view="calendar"><span class="m-icon">▣</span><span>Calendar</span></button>
     <button data-view="events"><span class="m-icon">☆</span><span>Events</span></button>
     <button data-view="polls"><span class="m-icon">▥</span><span>Polls</span></button>
     <button data-view="members"><span class="m-icon">♡</span><span>Members</span></button>
@@ -352,7 +305,6 @@
 
     const pageTitles = {
       home:     () => `Good ${getGreeting()}, <span id="greetingName">${window._userName || ''}</span> 👋`,
-      calendar: () => 'Calendar',
       events:   () => 'Events',
       polls:    () => 'Polls',
       members:  () => 'Members',

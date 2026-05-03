@@ -1,7 +1,8 @@
-const calendarState = {
-    year: 2026,
-    month: 5, // June, 0-indexed
-    events: [],
+let events = [];
+
+const homeCalState = {
+    year: new Date().getFullYear(),
+    month: new Date().getMonth(),
 };
 
 const monthNames = [
@@ -11,77 +12,84 @@ const monthNames = [
 
 const weekdays = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
 
+function dateStr(year, month, day) {
+    return `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+}
+
+function eventDateStr(e) {
+    const d = new Date(Number(e.date.$date?.$numberLong));
+    return dateStr(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
 async function fetchEvents() {
     const res = await api.get('/events');
     if (!res || !res.ok) return;
-    calendarState.events = await res.json();
-    renderCalendar();
-    renderMiniCal();
-    renderEventsView(calendarState.events);
+    events = await res.json();
+    renderHomeCalendar();
+    renderEventsView(events);
 }
 
-function renderCalendar() {
-    const grid = document.getElementById('calGrid');
-    const title = document.getElementById('calTitle');
-    grid.innerHTML = "";
-    title.textContent = `${monthNames[calendarState.month]} ${calendarState.year}`;
+// ── HOME CALENDAR ──
+
+function renderHomeCalendar() {
+    const grid = document.getElementById('homeCalGrid');
+    const title = document.getElementById('homeCalTitle');
+    if (!grid || !title) return;
+    grid.innerHTML = '';
+    title.textContent = `${monthNames[homeCalState.month]} ${homeCalState.year}`;
 
     weekdays.forEach(day => {
-        const header = document.createElement("div");
-        header.className = "cal-weekday";
+        const header = document.createElement('div');
+        header.className = 'cal-weekday';
         header.textContent = day;
         grid.appendChild(header);
     });
 
-    const firstDay    = new Date(calendarState.year, calendarState.month, 1).getDay();
-    const daysInMonth = new Date(calendarState.year, calendarState.month + 1, 0).getDate();
-    const daysInPrev  = new Date(calendarState.year, calendarState.month, 0).getDate();
+    const firstDay    = new Date(homeCalState.year, homeCalState.month, 1).getDay();
+    const daysInMonth = new Date(homeCalState.year, homeCalState.month + 1, 0).getDate();
+    const daysInPrev  = new Date(homeCalState.year, homeCalState.month, 0).getDate();
 
-    for (let i = 0; i < 35; i++) {
-        const cell = document.createElement("div");
-        cell.className = "cal-cell";
+    for (let i = 0; i < 42; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell';
 
         let day, month, year, muted = false;
 
         if (i < firstDay) {
             day = daysInPrev - firstDay + i + 1;
-            month = calendarState.month - 1;
-            year = calendarState.year;
+            month = homeCalState.month - 1;
+            year = homeCalState.year;
             if (month < 0) { month = 11; year--; }
             muted = true;
         } else if (i >= firstDay + daysInMonth) {
             day = i - (firstDay + daysInMonth) + 1;
-            month = calendarState.month + 1;
-            year = calendarState.year;
+            month = homeCalState.month + 1;
+            year = homeCalState.year;
             if (month > 11) { month = 0; year++; }
             muted = true;
         } else {
             day = i - firstDay + 1;
-            month = calendarState.month;
-            year = calendarState.year;
+            month = homeCalState.month;
+            year = homeCalState.year;
         }
 
-        if (muted) cell.classList.add("muted");
+        if (muted) cell.classList.add('muted');
 
-        const dateNum = document.createElement("div");
-        dateNum.className = "cal-date";
+        const today = new Date();
+        const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+        const dateNum = document.createElement('div');
+        dateNum.className = `cal-date${isToday ? ' today-num' : ''}`;
         dateNum.textContent = day;
         cell.appendChild(dateNum);
 
-        // Match events — compare against BSON DateTime (milliseconds)
-        const cellDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        const matching = calendarState.events.filter(e => {
-            const ms = Number(e.date.$date?.$numberLong);
-            const evDate = new Date(ms);
-            const evStr = `${evDate.getFullYear()}-${String(evDate.getMonth()+1).padStart(2,'0')}-${String(evDate.getDate()).padStart(2,'0')}`;
-            return evStr === cellDateStr;
-        });
+        const cellStr = dateStr(year, month, day);
+        const matching = events.filter(e => eventDateStr(e) === cellStr);
 
         matching.forEach(event => {
-            const pill = document.createElement("button");
+            const pill = document.createElement('button');
             pill.className = `event-pill ${event.category}`;
             pill.innerHTML = `<span class="pill-title">${event.icon} ${event.title}</span><small>${event.time}</small>`;
-            pill.addEventListener("click", () => openRsvpModal(event));
+            pill.addEventListener('click', () => openRsvpModal(event));
             cell.appendChild(pill);
         });
 
@@ -89,161 +97,25 @@ function renderCalendar() {
     }
 }
 
-function changeMonth(dir) {
-    calendarState.month += dir;
-    if (calendarState.month < 0)  { calendarState.month = 11; calendarState.year--; }
-    if (calendarState.month > 11) { calendarState.month = 0;  calendarState.year++; }
-    fetchEvents();
+function changeHomeMonth(dir) {
+    homeCalState.month += dir;
+    if (homeCalState.month < 0)  { homeCalState.month = 11; homeCalState.year--; }
+    if (homeCalState.month > 11) { homeCalState.month = 0;  homeCalState.year++; }
+    renderHomeCalendar();
 }
 
-function formatTime(timeStr) {
-    let [hour, minute] = timeStr.split(':');
-    let amPm = hour < 12 ? 'AM' : 'PM';
-    return `${((hour - 1) % 12) + 1}:${minute} ${amPm}`;
-}
-
-async function submitEvent(e) {
-    e.preventDefault();
-
-    const body = {
-        title:    document.getElementById("eventName").value.trim(),
-        date:     document.getElementById("eventDate").value,
-        time:     formatTime(document.getElementById("eventTime").value),
-        category: document.getElementById("eventCategory").value,
-        icon:     { drinks:"🍹", dining:"🍽️", daytrip:"🌴", yapping:"💬" }
-                  [document.getElementById("eventCategory").value],
-        location: document.getElementById("eventLocation").value || null,
-        notes:    document.getElementById("eventNote").value || null,
-    };
-
-    const res = await api.post("/events", body);
-    if (!res || !res.ok) {
-        showToast("Failed to submit event");
-        return;
-    }
-
-    // Jump to that month
-    const d = new Date(body.date + "T00:00:00");
-    calendarState.year  = d.getFullYear();
-    calendarState.month = d.getMonth();
-    await fetchEvents();
-    renderEventsView(calendarState.events);
-    closeModal();
-
-    document.getElementById("eventModal").classList.remove("show");
-    document.getElementById("eventForm").reset();
-    showToast("Event proposal added!");
-}
-
-async function initCalendar() {
-    document.getElementById('calPrev').addEventListener('click', () => changeMonth(-1));   // was 'prevMonth'
-    document.getElementById('calNext').addEventListener('click', () => changeMonth(1));    // was 'nextMonth'
-    document.getElementById('calTodayBtn').addEventListener('click', () => { 
-        const now = new Date();
-        calendarState.year  = now.getFullYear();
-        calendarState.month = now.getMonth();
-        fetchEvents();
-        showToast("Back to today");
-    });
-    document.getElementById("eventForm").addEventListener("submit", submitEvent);
-
-    const now = new Date();
-    calendarState.year  = now.getFullYear();
-    calendarState.month = now.getMonth();
-    await fetchEvents();
-
-    initMiniCal();
-}
-
-const miniState = { year: 2026, month: 5 };
-const miniMonthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-function renderMiniCal() {
-    const grid = document.getElementById('miniCalGrid');
-    const title = document.getElementById('miniCalTitle');
-    if (!grid || !title) return;
-    grid.innerHTML = '';
-    title.textContent = `${miniMonthNames[miniState.month]} ${miniState.year}`;
-
-    ['S','M','T','W','T','F','S'].forEach(d => {
-        const h = document.createElement('div');
-        h.className = 'mini-cal-day-header';
-        h.textContent = d;
-        grid.appendChild(h);
-    });
-
-    const firstDay    = new Date(miniState.year, miniState.month, 1).getDay();
-    const daysInMonth = new Date(miniState.year, miniState.month + 1, 0).getDate();
-    const daysInPrev  = new Date(miniState.year, miniState.month, 0).getDate();
-    const today       = new Date();
-
-    for (let i = 0; i < 35; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'mini-cal-day';
-
-        let day, month, year, muted = false;
-        if (i < firstDay) {
-            day = daysInPrev - firstDay + i + 1; month = miniState.month - 1; year = miniState.year;
-            if (month < 0) { month = 11; year--; }
-            muted = true;
-        } else if (i >= firstDay + daysInMonth) {
-            day = i - (firstDay + daysInMonth) + 1; month = miniState.month + 1; year = miniState.year;
-            if (month > 11) { month = 0; year++; }
-            muted = true;
-        } else {
-            day = i - firstDay + 1; month = miniState.month; year = miniState.year;
-        }
-
-        if (muted) cell.classList.add('muted');
-
-        const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-        if (isToday) cell.classList.add('today-num');
-
-        const cellDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        const hasEvent = calendarState.events.some(e => {
-            const ms = Number(e.date.$date?.$numberLong);
-            const evDate = new Date(ms);
-            const evStr = `${evDate.getFullYear()}-${String(evDate.getMonth()+1).padStart(2,'0')}-${String(evDate.getDate()).padStart(2,'0')}`;
-            return evStr === cellDateStr;
-        });
-        if (hasEvent) cell.classList.add('has-event');
-
-        cell.textContent = day;
-        cell.addEventListener('click', () => {
-            calendarState.year = year;
-            calendarState.month = month;
-            fetchEvents();
-            navigate('calendar');
-        });
-        grid.appendChild(cell);
-    }
-}
-
-function initMiniCal() {
-    document.getElementById('miniPrev').addEventListener('click', () => {
-        miniState.month--;
-        if (miniState.month < 0) { miniState.month = 11; miniState.year--; }
-        renderMiniCal();
-    });
-    document.getElementById('miniNext').addEventListener('click', () => {
-        miniState.month++;
-        if (miniState.month > 11) { miniState.month = 0; miniState.year++; }
-        renderMiniCal();
-    });
-    renderMiniCal();
-}
+// ── EVENTS VIEW ──
 
 function renderEventsView(events) {
     const grid = document.getElementById('eventsGrid');
     grid.innerHTML = '';
-    document.getElementById('eventCount').textContent = events.length;
     const catColors = { drinks:'#E2C4AA', dining:'#E2C4AA', daytrip:'#C0DCE0', yapping:'#CAD2C5' };
 
     events
         .map(e => ({ ...e, _d: new Date(Number(e.date.$date.$numberLong)) }))
         .sort((a, b) => a._d - b._d)
         .forEach(event => {
-            const dateStr = event._d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+            const ds = event._d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
             const id = event._id?.$oid;
             const card = document.createElement('div');
             card.className = 'event-card';
@@ -253,15 +125,15 @@ function renderEventsView(events) {
                     <div class="event-card-emoji ${event.category}">${event.icon}</div>
                     <div>
                         <div class="event-card-title">${event.title}</div>
-                        <div class="event-card-meta">${dateStr} · ${event.time}</div>
-                        ${event.location ? `<div class="event-card-meta">${event.location}</div>` : ''}
+                        <div class="event-card-meta">${ds} · ${event.time}</div>
+                        ${event.location ? `<div class="event-card-meta">📍 ${event.location}</div>` : ''}
                     </div>
                 </div>
                 <div class="event-card-footer">
                     <div class="rsvp-mini">
-                        <button class="rsvp-chip yes-chip"  data-id="${id}" data-status="yes">✓ Yes</button>
+                        <button class="rsvp-chip yes-chip"   data-id="${id}" data-status="yes">✓ Yes</button>
                         <button class="rsvp-chip maybe-chip" data-id="${id}" data-status="maybe">? Maybe</button>
-                        <button class="rsvp-chip no-chip"   data-id="${id}" data-status="no">✕ No</button>
+                        <button class="rsvp-chip no-chip"    data-id="${id}" data-status="no">✕ No</button>
                     </div>
                     <span class="event-card-cat" style="background:${catColors[event.category]}60">${event.category}</span>
                 </div>
@@ -277,4 +149,53 @@ function renderEventsView(events) {
             });
             grid.appendChild(card);
         });
+}
+
+// ── SUBMIT EVENT ──
+
+async function submitEvent(e) {
+    e.preventDefault();
+
+    const body = {
+        title:    document.getElementById('eventName').value.trim(),
+        date:     document.getElementById('eventDate').value,
+        time:     document.getElementById('eventTime').value,
+        category: document.getElementById('eventCategory').value,
+        icon:     { drinks:'🍹', dining:'🍽️', daytrip:'🌴', yapping:'💬' }
+                  [document.getElementById('eventCategory').value],
+        location: document.getElementById('eventLocation').value || null,
+        notes:    document.getElementById('eventNote').value || null,
+    };
+
+    const res = await api.post('/events', body);
+    if (!res || !res.ok) {
+        showToast('Failed to submit event');
+        return;
+    }
+
+    const d = new Date(body.date + 'T00:00:00');
+    homeCalState.year  = d.getFullYear();
+    homeCalState.month = d.getMonth();
+
+    await fetchEvents();
+    closeModal();
+    document.getElementById('eventForm').reset();
+    showToast('Event proposal added!');
+}
+
+// ── INIT ──
+
+async function initCalendar() {
+    document.getElementById('homeCalPrev').addEventListener('click', () => changeHomeMonth(-1));
+    document.getElementById('homeCalNext').addEventListener('click', () => changeHomeMonth(1));
+    document.getElementById('homeCalTodayBtn').addEventListener('click', () => {
+        const now = new Date();
+        homeCalState.year  = now.getFullYear();
+        homeCalState.month = now.getMonth();
+        renderHomeCalendar();
+        showToast('Back to today');
+    });
+    document.getElementById('eventForm').addEventListener('submit', submitEvent);
+
+    await fetchEvents();
 }
