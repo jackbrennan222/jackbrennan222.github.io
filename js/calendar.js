@@ -30,7 +30,6 @@ async function fetchEvents() {
 }
 
 // ── HOME CALENDAR ──
-
 function renderHomeCalendar() {
     const grid = document.getElementById('homeCalGrid');
     const title = document.getElementById('homeCalTitle');
@@ -49,7 +48,7 @@ function renderHomeCalendar() {
     const daysInMonth = new Date(homeCalState.year, homeCalState.month + 1, 0).getDate();
     const daysInPrev  = new Date(homeCalState.year, homeCalState.month, 0).getDate();
 
-    for (let i = 0; i < 42; i++) {
+    for (let i = 0; i < 35; i++) {
         const cell = document.createElement('div');
         cell.className = 'cal-cell';
 
@@ -105,50 +104,61 @@ function changeHomeMonth(dir) {
 }
 
 // ── EVENTS VIEW ──
-
-function renderEventsView(events) {
+async function renderEventsView(events) {
     const grid = document.getElementById('eventsGrid');
     grid.innerHTML = '';
     const catColors = { drinks:'#E2C4AA', dining:'#E2C4AA', daytrip:'#C0DCE0', yapping:'#CAD2C5' };
 
-    events
+    const sorted = events
         .map(e => ({ ...e, _d: new Date(Number(e.date.$date.$numberLong)) }))
-        .sort((a, b) => a._d - b._d)
-        .forEach(event => {
-            const ds = event._d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-            const id = event._id?.$oid;
-            const card = document.createElement('div');
-            card.className = 'event-card';
-            card.dataset.cat = event.category;
-            card.innerHTML = `
-                <div class="event-card-top">
-                    <div class="event-card-emoji ${event.category}">${event.icon}</div>
-                    <div>
-                        <div class="event-card-title">${event.title}</div>
-                        <div class="event-card-meta">${ds} · ${event.time}</div>
-                        ${event.location ? `<div class="event-card-meta">📍 ${event.location}</div>` : ''}
-                    </div>
+        .sort((a, b) => a._d - b._d);
+
+    for (const event of sorted) {
+        const id = event._id?.$oid;
+        const ds = event._d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+
+        // Fetch RSVP status for this event
+        let yourStatus = null;
+        const rsvpRes = await api.get(`/events/${id}/rsvps`);
+        if (rsvpRes && rsvpRes.ok) {
+            const rsvp = await rsvpRes.json();
+            yourStatus = rsvp.your_status?.toLowerCase() ?? null;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'event-card';
+        card.dataset.cat = event.category;
+        card.innerHTML = `
+            <div class="event-card-top">
+                <div class="event-card-emoji ${event.category}">${event.icon}</div>
+                <div>
+                    <div class="event-card-title">${event.title}</div>
+                    <div class="event-card-meta">${ds} · ${event.time}</div>
+                    ${event.location ? `<div class="event-card-meta">📍 ${event.location}</div>` : ''}
                 </div>
-                <div class="event-card-footer">
-                    <div class="rsvp-mini">
-                        <button class="rsvp-chip yes-chip"   data-id="${id}" data-status="yes">✓ Yes</button>
-                        <button class="rsvp-chip maybe-chip" data-id="${id}" data-status="maybe">? Maybe</button>
-                        <button class="rsvp-chip no-chip"    data-id="${id}" data-status="no">✕ No</button>
-                    </div>
-                    <span class="event-card-cat" style="background:${catColors[event.category]}60">${event.category}</span>
+            </div>
+            <div class="event-card-footer">
+                <div class="rsvp-mini">
+                    <button class="rsvp-chip yes-chip   ${yourStatus === 'yes'   ? 'selected' : ''}" data-id="${id}" data-status="yes">✓ Yes</button>
+                    <button class="rsvp-chip maybe-chip ${yourStatus === 'maybe' ? 'selected' : ''}" data-id="${id}" data-status="maybe">? Maybe</button>
+                    <button class="rsvp-chip no-chip    ${yourStatus === 'no'    ? 'selected' : ''}" data-id="${id}" data-status="no">✕ No</button>
                 </div>
-            `;
-            card.querySelectorAll('.rsvp-chip').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const res = await api.post(`/events/${btn.dataset.id}/rsvps`, { status: btn.dataset.status });
-                    if (!res || !res.ok) { showToast('RSVP failed'); return; }
-                    card.querySelectorAll('.rsvp-chip').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    showToast(`RSVP set to ${btn.dataset.status}!`);
-                });
+                <span class="event-card-cat" style="background:${catColors[event.category]}60">${event.category}</span>
+            </div>
+        `;
+
+        card.querySelectorAll('.rsvp-chip').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const res = await api.post(`/events/${btn.dataset.id}/rsvps`, { status: btn.dataset.status });
+                if (!res || !res.ok) { showToast('RSVP failed'); return; }
+                card.querySelectorAll('.rsvp-chip').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                showToast(`RSVP set to ${btn.dataset.status}!`);
             });
-            grid.appendChild(card);
         });
+
+        grid.appendChild(card);
+    }
 }
 
 // ── SUBMIT EVENT ──
