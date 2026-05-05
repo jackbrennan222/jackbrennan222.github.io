@@ -102,8 +102,26 @@ async function loadMembers() {
     });
 }
 
+function addAdminNav() {
+    const nav = document.querySelector('.nav');
+    const adminSection = document.createElement('div');
+    adminSection.innerHTML = `
+        <div class="nav-section-label">Admin</div>
+        <button class="nav-item" data-view="admin">
+            <span class="nav-icon">⚙</span><span>Admin</span>
+        </button>
+    `;
+    nav.appendChild(adminSection);
+
+    // Register the new nav item for navigation
+    adminSection.querySelectorAll('.nav-item[data-view]').forEach(btn => {
+        btn.addEventListener('click', () => navigate(btn.dataset.view));
+    });
+}
+
 async function boot() {
-    if (!getToken()) {
+    if (!getToken() || isTokenExpired(token)) {
+        clearToken();
         window.location.href = '/login.html';
         return;
     }
@@ -113,6 +131,10 @@ async function boot() {
         if (!res) return;
         currentUser = await res.json();
         renderProfile(currentUser);
+
+        if (currentUser.is_admin) {
+            addAdminNav();
+        }
     } catch (e) {
         console.error('Boot failed', e);
     }
