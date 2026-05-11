@@ -119,8 +119,56 @@ function addAdminNav() {
     });
 }
 
+function addEditButtons() {
+    const modalHead = document.getElementById("eventDetailModalHead");
+    
+    if (modalHead.querySelector('.edit-btn')) return;
+
+    const editButton = document.createElement('button');
+    editButton.className = 'edit-btn';
+    editButton.id = 'editButton';
+    editButton.textContent = '✎';
+
+    editButton.addEventListener('click', () => {
+        console.log(editButton.dataset);
+        document.getElementById('eventDetailModal').classList.remove('show');
+
+        document.getElementById('eventName').value = editButton.dataset.eventTitle;
+        document.getElementById('eventDate').value = editButton.dataset.eventDate;
+        document.getElementById('eventTime').value = editButton.dataset.eventTime;
+        document.getElementById('eventCategory').value = editButton.dataset.eventCategory;
+        document.getElementById('eventLocation').value = editButton.dataset.eventLocation;
+        document.getElementById('eventNote').value = editButton.dataset.eventNotes;
+
+        document.getElementById('eventModal').classList.add('show'); 
+    });
+
+    const closeBtn = modalHead.querySelector('#closeDetailModal');
+    
+    const btnGroup = document.createElement('div');
+    btnGroup.style.cssText = 'display:flex; align-items:center; gap:8px;';
+    closeBtn.replaceWith(btnGroup);
+    btnGroup.appendChild(editButton);
+    btnGroup.appendChild(closeBtn);
+}
+
+function addMemberLists() {
+    const eventForm = document.getElementById("eventForm");
+    const proposeSubmitButton = document.getElementById("proposeSubmitButton"); // insert before
+
+    const middleSection = document.getElementById("eventDetailMiddleSection"); // append child
+
+    const memberList = document.createElement('div');
+    memberList.id = "detailMembers";
+    memberList.style = "font-size: 13px; color: var(--ink); line-height: 1.5; background: rgba(236, 234, 209, 0.4); border-radius: 10px; padding: 10px 12px; display: block;";
+    memberList.innerText = "Test"
+
+    eventForm.insertBefore(memberList, proposeSubmitButton);
+    middleSection.appendChild(memberList);
+}
+
 async function boot() {
-    if (!getToken() || isTokenExpired(token)) {
+    if (!getToken() || isTokenExpired(getToken())) {
         clearToken();
         window.location.href = '/login.html';
         return;
@@ -134,6 +182,8 @@ async function boot() {
 
         if (currentUser.is_admin) {
             addAdminNav();
+            addEditButtons();
+            addMemberLists();
         }
     } catch (e) {
         console.error('Boot failed', e);

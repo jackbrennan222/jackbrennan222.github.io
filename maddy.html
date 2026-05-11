@@ -255,7 +255,7 @@
           <label>Notes</label>
           <textarea id="eventNote" placeholder="Dress code, what to bring…"></textarea>
         </div>
-        <div class="field full">
+        <div class="field full" id="proposeSubmitButton">
           <button class="primary-btn" type="submit" style="width:100%;justify-content:center;">Submit Proposal</button>
         </div>
       </form>
@@ -264,7 +264,7 @@
 
   <div class="modal-backdrop" id="eventDetailModal">
     <div class="modal">
-      <div class="modal-head">
+      <div class="modal-head" id="eventDetailModalHead">
         <div style="display:flex;align-items:center;gap:14px;">
           <div class="next-event-emoji" id="detailEmoji" style="font-size:32px;width:56px;height:56px;border-radius:14px;background:rgba(236,234,209,0.6);display:grid;place-items:center;flex-shrink:0;"></div>
           <div>
@@ -275,7 +275,7 @@
         <button class="close-btn" id="closeDetailModal">×</button>
       </div>
 
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;" id="eventDetailMiddleSection">
         <div id="detailLocation" style="font-size:13px;color:var(--muted);display:none;">📍 <span></span></div>
         <div id="detailNotes" style="font-size:13px;color:var(--ink);line-height:1.5;background:rgba(236,234,209,0.4);border-radius:10px;padding:10px 12px;display:none;"></div>
       </div>

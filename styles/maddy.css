@@ -344,6 +344,8 @@
     }
     .cal-weekday:last-child { border-right: 0; }
     .cal-cell {
+      display: flex;
+      flex-direction: column;
       padding: 8px;
       border-right: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
@@ -362,6 +364,8 @@
     }
     .event-pill {
       display: flex;
+      flex: 1;
+      min-height: 0;
       flex-direction: column;
       width: 100%;
       border-radius: 7px;
@@ -381,7 +385,7 @@
     .pill-title {
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
+      text-wrap: wrap;
     }
 
     .event-pill small {
@@ -389,7 +393,15 @@
       font-weight: 400;
       opacity: 0.65;
     }
+    .event-pill > span {
+      text-wrap: wrap;
+    }
     .event-pill:hover { filter: brightness(0.95); }
+    .event-pill.past {
+        opacity: 0.4;
+        filter: grayscale(1);
+        cursor: default;
+    }
     .drinks  { background: rgba(226,196,170,0.65); }
     .dining  { background: rgba(226,196,170,0.85); }
     .daytrip { background: rgba(192,220,224,0.9); }
@@ -726,6 +738,11 @@
     }
     .modal-head h2 { font-family: var(--serif); font-size: 26px; font-weight: 400; }
     .modal-head p { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .edit-btn {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--cream); font-size: 18px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
     .close-btn {
       width: 32px; height: 32px; border-radius: 50%;
       background: var(--cream); font-size: 18px;

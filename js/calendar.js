@@ -86,8 +86,9 @@ function renderHomeCalendar() {
 
         matching.forEach(event => {
             const pill = document.createElement('button');
-            pill.className = `event-pill ${event.category}`;
-            pill.innerHTML = `<span class="pill-title">${event.icon} ${event.title}</span><small>${event.time}</small>`;
+            const eventDate = new Date(year, month, day);
+            pill.className = `event-pill ${event.category} ${eventDate < today ? 'past' : ''}`;
+            pill.innerHTML = `<span class="pill-title">${event.icon} ${event.title}</span>${ event.location ? '<span>📍 ' + event.location + '</span>' : ''}<small>${event.time}</small>`;
             pill.addEventListener('click', () => openRsvpModal(event));
             cell.appendChild(pill);
         });
