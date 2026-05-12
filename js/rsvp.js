@@ -36,6 +36,7 @@ async function openRsvpModal(event) {
         editButton.dataset.eventCategory = event.category;
         editButton.dataset.eventLocation = event.location;
         editButton.dataset.eventNotes = event.notes;
+        editButton.dataset.eventMembers = JSON.stringify(event.members.map(m => m.$oid) ?? []);
     }
 
     const locEl = document.getElementById('detailLocation');

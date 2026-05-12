@@ -16,7 +16,7 @@
     <!-- ── SIDEBAR ── -->
     <aside class="sidebar">
       <div class="brand-mark">
-        <span class="emoji">🌺</span>
+        <img src="assets/logo-removebg-preview.png" style="height: 128px; width: 128px;"/>
         <h1>M.A.D.D.Y.</h1>
         <p>Members Association for<br>Drinks, Dining &amp; Yapping</p>
       </div>
@@ -162,8 +162,19 @@
         </div>
       </div>
 
+      <!-- ── ADMIN ── -->
       <div class="view" id="view-admin">
-        <!-- whatever admin content you need -->
+          <div class="admin-section">
+              <div class="card-title" style="padding: 0 4px 8px;">Pending Approval</div>
+              <div class="events-grid" id="eventsAdminGrid"></div>
+              <div id="eventsAdminEmpty" style="display:none; font-size:13px; color:var(--muted); padding: 4px;">
+                  No events pending approval.
+              </div>
+          </div>
+          <div class="admin-section">
+              <div class="card-title" style="padding: 0 4px 8px;">All Events · RSVPs</div>
+              <div class="admin-rsvp-grid" id="adminRsvpGrid"></div>
+          </div>
       </div>
     </main>
 
@@ -336,8 +347,8 @@
 
     // ── MODAL ──
     function openModal() { document.getElementById('eventModal').classList.add('show'); }
-    function closeModal() { document.getElementById('eventModal').classList.remove('show'); }
-    document.getElementById('proposeBtn').addEventListener('click', openModal);
+    function closeModal() { document.getElementById('eventModal').classList.remove('show'); setModalMode('propose'); }
+    document.getElementById('proposeBtn').addEventListener('click', () => { setModalMode('propose'); openModal(); });
     document.getElementById('closeModal').addEventListener('click', closeModal);
     document.getElementById('eventModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });

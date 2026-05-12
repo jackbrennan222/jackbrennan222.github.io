@@ -87,9 +87,10 @@ function renderHomeCalendar() {
         matching.forEach(event => {
             const pill = document.createElement('button');
             const eventDate = new Date(year, month, day);
-            pill.className = `event-pill ${event.category} ${eventDate < today ? 'past' : ''}`;
+            pill.className = `event-pill ${event.category}${event.approved ? '' : '-pending'} ${eventDate < today ? 'past' : ''}`;
             pill.innerHTML = `<span class="pill-title">${event.icon} ${event.title}</span>${ event.location ? '<span>📍 ' + event.location + '</span>' : ''}<small>${event.time}</small>`;
-            pill.addEventListener('click', () => openRsvpModal(event));
+            if (event.approved) { pill.addEventListener('click', () => openRsvpModal(event)); }
+            else { pill.addEventListener('click', () => navigate('admin')); }
             cell.appendChild(pill);
         });
 
@@ -107,8 +108,12 @@ function changeHomeMonth(dir) {
 // ── EVENTS VIEW ──
 async function renderEventsView(events) {
     const grid = document.getElementById('eventsGrid');
+    const adminGrid = document.getElementById('eventsAdminGrid');
     grid.innerHTML = '';
+    adminGrid.innerHTML = '';
     const catColors = { drinks:'#E2C4AA', dining:'#E2C4AA', daytrip:'#C0DCE0', yapping:'#CAD2C5' };
+
+    await loadHomeStats()
 
     const sorted = events
         .map(e => ({ ...e, _d: new Date(Number(e.date.$date.$numberLong)) }))
@@ -139,24 +144,128 @@ async function renderEventsView(events) {
                 </div>
             </div>
             <div class="event-card-footer">
-                <div class="rsvp-mini">
+                ${event.approved ?
+                `<div class="rsvp-mini">
                     <button class="rsvp-chip yes-chip   ${yourStatus === 'yes'   ? 'selected' : ''}" data-id="${id}" data-status="yes">✓ Yes</button>
                     <button class="rsvp-chip maybe-chip ${yourStatus === 'maybe' ? 'selected' : ''}" data-id="${id}" data-status="maybe">? Maybe</button>
                     <button class="rsvp-chip no-chip    ${yourStatus === 'no'    ? 'selected' : ''}" data-id="${id}" data-status="no">✕ No</button>
                 </div>
-                <span class="event-card-cat" style="background:${catColors[event.category]}60">${event.category}</span>
+                <span class="event-card-cat" style="background:${catColors[event.category]}60">${event.category}</span>`
+                    :
+                `<div class="mini-rsvp">
+                    <button class="rsvp-chip yes-chip" data-id="${id}" id="approve">✓ Approve</button>
+                    <button class="rsvp-chip no-chip"  data-id="${id}" id="delete">✕ Delete</button>
+                </div>`
+                }
             </div>
         `;
 
         card.querySelectorAll('.rsvp-chip').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const res = await api.post(`/events/${btn.dataset.id}/rsvps`, { status: btn.dataset.status });
-                if (!res || !res.ok) { showToast('RSVP failed'); return; }
-                card.querySelectorAll('.rsvp-chip').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                showToast(`RSVP set to ${btn.dataset.status}!`);
-            });
+            if (btn.id === "approve") {
+                btn.addEventListener('click', async () => {
+                    const res = await api.patch(`/events/${btn.dataset.id}/approve`, {});
+                    if (!res || !res.ok) { showToast('RSVP failed'); return; }
+                    fetchEvents();
+                });
+            } else if (btn.id === "delete") {
+                btn.addEventListener('click', async () => {
+                    const res = await api.delete(`/events/${btn.dataset.id}`);
+                    if (!res || !res.ok) { showToast('RSVP failed'); return; }
+                    fetchEvents();
+                });
+            } else {
+                btn.addEventListener('click', async () => {
+                    const res = await api.post(`/events/${btn.dataset.id}/rsvps`, { status: btn.dataset.status });
+                    if (!res || !res.ok) { showToast('RSVP failed'); return; }
+                    card.querySelectorAll('.rsvp-chip').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    showToast(`RSVP set to ${btn.dataset.status}!`);
+                });
+            }
         });
+        
+        if (event.approved) {
+            grid.appendChild(card);
+        } else {
+            adminGrid.appendChild(card);
+        }
+    }
+
+    if (document.getElementById('adminRsvpGrid')) {
+        await renderAdminRsvpGrid(events);
+    }
+
+    // Toggle empty state for pending section
+    const adminEmpty = document.getElementById('eventsAdminEmpty');
+    if (adminEmpty) {
+        const hasPending = events.some(e => !e.approved);
+        adminEmpty.style.display = hasPending ? 'none' : 'block';
+        document.getElementById('eventsAdminGrid').style.display = hasPending ? '' : 'none';
+    }
+}
+
+async function renderAdminRsvpGrid(events) {
+    const grid = document.getElementById('adminRsvpGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    // Fetch all users once for name lookup
+    const usersRes = await api.get('/users');
+    const users = (usersRes && usersRes.ok) ? await usersRes.json() : [];
+    const userMap = Object.fromEntries(users.map(u => [u._id?.$oid, u.display_name || u.username]));
+
+    const sorted = events
+        .filter(e => e.approved)
+        .map(e => ({ ...e, _d: new Date(Number(e.date.$date.$numberLong)) }))
+        .sort((a, b) => a._d - b._d);
+
+    for (const event of sorted) {
+        const id = event._id?.$oid;
+        const ds = event._d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+        // Fetch RSVPs for this event
+        const rsvpRes = await api.get(`/events/${id}/rsvps`);
+        const rsvpData = (rsvpRes && rsvpRes.ok) ? await rsvpRes.json() : {};
+        const allRsvps = rsvpData.all ?? [];   // expects [{ user_id, status }]
+
+        const counts = { yes: 0, maybe: 0, no: 0 };
+        allRsvps.forEach(r => { if (counts[r.status] !== undefined) counts[r.status]++; });
+
+        const nameRows = allRsvps.map(r => {
+            const name = userMap[r.user_id] ?? r.user_id;
+            return `
+                <div class="admin-rsvp-name-row">
+                    <span class="admin-rsvp-name">${name}</span>
+                    <span class="admin-rsvp-status status-${r.status}">${r.status}</span>
+                </div>`;
+        }).join('');
+
+        const card = document.createElement('div');
+        card.className = 'admin-rsvp-card';
+        card.innerHTML = `
+            <div class="admin-rsvp-header">
+                <div class="event-card-emoji ${event.category}" style="width:42px;height:42px;border-radius:10px;display:grid;place-items:center;font-size:22px;flex-shrink:0;">${event.icon}</div>
+                <div>
+                    <div class="admin-rsvp-title">${event.title}</div>
+                    <div class="admin-rsvp-meta">${ds} · ${event.time}</div>
+                </div>
+            </div>
+            <div class="admin-rsvp-counts">
+                <div class="admin-count-pill">
+                    <span class="admin-count-num yes-num">${counts.yes}</span>
+                    <span class="admin-count-label">Yes</span>
+                </div>
+                <div class="admin-count-pill">
+                    <span class="admin-count-num maybe-num">${counts.maybe}</span>
+                    <span class="admin-count-label">Maybe</span>
+                </div>
+                <div class="admin-count-pill">
+                    <span class="admin-count-num no-num">${counts.no}</span>
+                    <span class="admin-count-label">No</span>
+                </div>
+            </div>
+            ${allRsvps.length ? `<div class="admin-rsvp-names">${nameRows}</div>` : '<div style="font-size:12px;color:var(--muted);">No RSVPs yet.</div>'}
+        `;
 
         grid.appendChild(card);
     }
@@ -167,31 +276,46 @@ async function renderEventsView(events) {
 async function submitEvent(e) {
     e.preventDefault();
 
+    const form    = document.getElementById('eventForm');
+    const isEdit  = form.dataset.mode === 'edit';
+    const eventId = form.dataset.eventId;
+    const memberIds = getSelectedMemberIds();
+
     const body = {
         title:    document.getElementById('eventName').value.trim(),
         date:     document.getElementById('eventDate').value,
-        time:     document.getElementById('eventTime').value,
+        time:     to12(document.getElementById('eventTime').value),
         category: document.getElementById('eventCategory').value,
         icon:     { drinks:'🍹', dining:'🍽️', daytrip:'🌴', yapping:'💬' }
                   [document.getElementById('eventCategory').value],
         location: document.getElementById('eventLocation').value || null,
         notes:    document.getElementById('eventNote').value || null,
+        ...(memberIds !== undefined && { member_ids: memberIds }),
     };
 
-    const res = await api.post('/events', body);
-    if (!res || !res.ok) {
-        showToast('Failed to submit event');
-        return;
-    }
+    const res = isEdit
+        ? await api.patch(`/events/${eventId}`, body)
+        : await api.post('/events', body);
 
-    const d = new Date(body.date + 'T00:00:00');
-    homeCalState.year  = d.getFullYear();
-    homeCalState.month = d.getMonth();
+    if (!res || !res.ok) { showToast(isEdit ? 'Update failed' : 'Failed to submit event'); return; }
+
+    if (!isEdit) { 
+        const d = new Date(body.date + 'T00:00:00');
+        homeCalState.year  = d.getFullYear();
+        homeCalState.month = d.getMonth();
+    }
 
     await fetchEvents();
     closeModal();
     document.getElementById('eventForm').reset();
-    showToast('Event proposal added!');
+    showToast(isEdit ? 'Event updated!' : 'Event proposal added!');
+}
+
+function to12(time24) {
+    const [h, m] = time24.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12  = h % 12 || 12;
+    return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
 }
 
 // ── INIT ──

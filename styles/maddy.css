@@ -261,6 +261,133 @@
       color: var(--ink);
     }
 
+    .member-picker {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-height: 180px;
+        overflow-y: auto;
+        scrollbar-width: none;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 8px;
+        background: #fff;
+    }
+    .member-picker::-webkit-scrollbar { display: none; }
+
+    .member-pick-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.15s;
+        user-select: none;
+    }
+    .member-pick-row:hover { background: rgba(236,234,209,0.6); }
+    .member-pick-row.selected { background: rgba(251,91,5,0.07); }
+
+    .pick-avatar { border-radius: 50%; flex-shrink: 0; }
+    .pick-name   { flex: 1; font-size: 13px; font-weight: 500; }
+
+    .pick-check {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--orange);
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+    .member-pick-row.selected .pick-check { opacity: 1; }
+
+    /* ── ADMIN VIEW ── */
+    #view-admin {
+        gap: 28px;
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+    #view-admin::-webkit-scrollbar { display: none; }
+
+    .admin-section { display: flex; flex-direction: column; }
+
+    .admin-rsvp-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        align-content: start;
+    }
+
+    .admin-rsvp-card {
+        background: rgba(255,253,248,0.88);
+        border: 1px solid rgba(36,39,43,0.07);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .admin-rsvp-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .admin-rsvp-title { font-size: 14px; font-weight: 700; }
+    .admin-rsvp-meta  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .admin-rsvp-counts {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+
+    .admin-count-pill {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 8px 6px;
+        border-radius: 10px;
+        background: rgba(236,234,209,0.4);
+        gap: 4px;
+    }
+
+    .admin-count-num   { font-size: 20px; font-weight: 700; }
+    .admin-count-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+    .yes-num   { color: #4f8b5f; }
+    .maybe-num { color: #ff9f43; }
+    .no-num    { color: #ee3f2d; }
+
+    .admin-rsvp-names {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .admin-rsvp-name-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12px;
+        padding: 5px 8px;
+        border-radius: 8px;
+        background: rgba(236,234,209,0.3);
+    }
+
+    .admin-rsvp-name { font-weight: 600; }
+
+    .admin-rsvp-status {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 99px;
+    }
+    .status-yes   { background: rgba(79,139,95,0.15);  color: #4f8b5f; }
+    .status-maybe { background: rgba(255,159,67,0.15); color: #ff9f43; }
+    .status-no    { background: rgba(238,63,45,0.15);  color: #ee3f2d; }
+    .status-none  { background: rgba(109,107,102,0.1); color: var(--muted); }
+
     .arrow-btn {
       width: 30px; height: 30px; border-radius: 50%;
       display: grid; place-items: center;
@@ -406,6 +533,11 @@
     .dining  { background: rgba(226,196,170,0.85); }
     .daytrip { background: rgba(192,220,224,0.9); }
     .yapping { background: rgba(202,210,197,0.88); }
+
+    .drinks-pending  { border: rgba(226,196,170,0.65) 2px dashed; }
+    .dining-pending  { border: rgba(226,196,170,0.85) 2px dashed; }
+    .daytrip-pending { border: rgba(192,220,224,0.9) 2px dashed; }
+    .yapping-pending { border: rgba(202,210,197,0.88) 2px dashed; }
 
     .cal-legend {
       display: flex; align-items: center; gap: 18px;
@@ -779,7 +911,7 @@
       .nav-item span:not(.nav-icon) { display: none; }
       .nav-item { justify-content: center; padding: 12px; }
       .nav-item.active::before { display: none; }
-      .brand-mark p, .brand-mark h1 { display: none; }
+      .brand-mark p, .brand-mark h1 { display: flex; flex-direction: column; align-items: center; }
       .nav-section-label { display: none; }
       .nav-badge { display: none; }
       .profile-info, .logout-btn { display: none; }

@@ -32,7 +32,11 @@ async function loadHomeStats() {
     const res = await api.get('/events');
     if (res && res.ok) {
         const events = await res.json();
-        document.getElementById('eventCount').textContent = events.length;
+        document.getElementById('eventCount').textContent = events.filter(e => e.approved).length;
+        const adminCount = document.getElementById('eventAdminCount')
+        if (adminCount) {
+            adminCount.textContent = events.filter(e => !e.approved).length;
+        }
         renderNextEvent(events);
     }
 
@@ -109,6 +113,7 @@ function addAdminNav() {
         <div class="nav-section-label">Admin</div>
         <button class="nav-item" data-view="admin">
             <span class="nav-icon">⚙</span><span>Admin</span>
+            <span class="nav-badge" id="eventAdminCount">–</span>
         </button>
     `;
     nav.appendChild(adminSection);
@@ -140,6 +145,18 @@ function addEditButtons() {
         document.getElementById('eventLocation').value = editButton.dataset.eventLocation;
         document.getElementById('eventNote').value = editButton.dataset.eventNotes;
 
+        const members = JSON.parse(editButton.dataset.eventMembers || '[]');
+        const picker = document.getElementById('memberPicker');
+        if (picker) {
+            picker.querySelectorAll('.member-pick-row').forEach(row => {
+                const cb       = row.querySelector('input[type=checkbox]');
+                const selected = members.includes(row.dataset.id);
+                cb.checked     = selected;
+                row.classList.toggle('selected', selected);
+            });
+        }
+
+        setModalMode('edit', editButton.dataset.eventId);
         document.getElementById('eventModal').classList.add('show'); 
     });
 
@@ -152,19 +169,104 @@ function addEditButtons() {
     btnGroup.appendChild(closeBtn);
 }
 
-function addMemberLists() {
-    const eventForm = document.getElementById("eventForm");
-    const proposeSubmitButton = document.getElementById("proposeSubmitButton"); // insert before
+function setModalMode(mode, eventId = null) {
+    const isEdit = mode === 'edit';
 
-    const middleSection = document.getElementById("eventDetailMiddleSection"); // append child
+    document.querySelector('#eventModal .modal-head h2').textContent =
+        isEdit ? 'Edit Event' : 'Propose an Event';
+    document.querySelector('#eventModal .modal-head p').textContent =
+        isEdit ? 'Update the details below.' : 'Submit for association review, aka the group chat.';
+
+    const submitField = document.getElementById('proposeSubmitButton');
+    submitField.innerHTML = isEdit ? `
+        <div style="display:flex;gap:10px;">
+            <button class="primary-btn" type="submit"
+                style="flex:1;justify-content:center;"
+                id="updateEventBtn" data-id="${eventId}">
+                ✎ Update Event
+            </button>
+            <button type="button" id="deleteEventBtn" data-id="${eventId}"
+                style="padding:10px 18px;border-radius:99px;font-weight:700;font-size:13px;
+                       background:rgba(238,63,45,0.1);color:#ee3f2d;border:1px solid rgba(238,63,45,0.25);
+                       transition:all 0.18s;cursor:pointer;">
+                ✕ Delete
+            </button>
+        </div>
+    ` : `
+        <button class="primary-btn" type="submit"
+            style="width:100%;justify-content:center;">
+            Submit Proposal
+        </button>
+    `;
+
+    if (isEdit) {
+        document.getElementById('deleteEventBtn').addEventListener('click', async () => {
+            const res = await api.delete(`/events/${eventId}`);
+            if (!res || !res.ok) { showToast('Delete failed'); return; }
+            closeModal();
+            showToast('Event deleted');
+            fetchEvents();
+        });
+    }
+
+    // Store mode so submitEvent knows which endpoint to hit
+    document.getElementById('eventForm').dataset.mode    = mode;
+    document.getElementById('eventForm').dataset.eventId = eventId ?? '';
+}
+
+function addMemberLists() {
+    const middleSection = document.getElementById("eventDetailMiddleSection");
 
     const memberList = document.createElement('div');
     memberList.id = "detailMembers";
     memberList.style = "font-size: 13px; color: var(--ink); line-height: 1.5; background: rgba(236, 234, 209, 0.4); border-radius: 10px; padding: 10px 12px; display: block;";
     memberList.innerText = "Test"
 
-    eventForm.insertBefore(memberList, proposeSubmitButton);
     middleSection.appendChild(memberList);
+}
+
+async function initMemberPicker() {
+    const res = await api.get('/users');
+    if (!res || !res.ok) return;
+    const users = await res.json();
+
+    const picker = document.createElement('div');
+    picker.className = 'field full';
+    picker.id = 'memberPickerField';
+    picker.innerHTML = `
+        <label>Invite Members</label>
+        <div class="member-picker" id="memberPicker">
+            ${users.map(u => {
+                const name = u.display_name || u.username;
+                const uid  = u._id?.$oid;
+                return `
+                <label class="member-pick-row" data-id="${uid}">
+                    <img src="${avatarUrl(name)}" width="28" height="28" class="pick-avatar" />
+                    <span class="pick-name">${name}</span>
+                    <span class="pick-check">✓</span>
+                    <input type="checkbox" value="${uid}" style="display:none" />
+                </label>`;
+            }).join('')}
+        </div>
+    `;
+
+    const submitField = document.getElementById('proposeSubmitButton');
+    document.getElementById('eventForm').insertBefore(picker, submitField);
+
+    picker.querySelectorAll('.member-pick-row').forEach(row => {
+        row.addEventListener('click', () => {
+            const cb = row.querySelector('input[type=checkbox]');
+            cb.checked = !cb.checked;
+            row.classList.toggle('selected', cb.checked);
+        });
+    });
+}
+
+function getSelectedMemberIds() {
+    const picker = document.getElementById('memberPicker');
+    if (!picker) return undefined;
+    return [...picker.querySelectorAll('input[type=checkbox]:checked')]
+        .map(cb => cb.value);
 }
 
 async function boot() {
@@ -184,6 +286,7 @@ async function boot() {
             addAdminNav();
             addEditButtons();
             addMemberLists();
+            await initMemberPicker();
         }
     } catch (e) {
         console.error('Boot failed', e);
