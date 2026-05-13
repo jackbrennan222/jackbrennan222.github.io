@@ -12,18 +12,21 @@ async function fetchYaps() {
     if (!res || !res.ok) return;
     const yaps = await res.json();
 
+    const uRes = await api.get("/users");
+    const users = await uRes.json();
+
     const list = document.getElementById("yapList");
     list.innerHTML = "";
-    yaps.forEach(y => prependYap(y, false));
+    yaps.forEach(y => prependYap(y, false, users ?? []));
 }
 
-function prependYap(yap, prepend = true) {
+function prependYap(yap, prepend = true, users) {
     const list = document.getElementById("yapList");
     const id = yap._id?.$oid || yap.id || "";
     const hasLiked = currentUser && yap.likes?.some(l => l.$oid === currentUser._id?.$oid);
     const likeCount = yap.likes?.length ?? 0;
     const initial = (yap.username || "?")[0].toUpperCase();
-    const color = colorFromName(yap.username[0] || "");
+    const color = colorFromName(users.find(u => u.username === yap.username).display_name || "");
     const timeAgo = formatTimeAgo(yap.created_at.$date.$numberLong);
 
     const entry = document.createElement("div");
