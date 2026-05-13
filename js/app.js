@@ -1,7 +1,7 @@
 let currentUser = null;
 
 function colorFromName(name) {
-    const colors = ["ffadad","ffd6a5","fdffb6","caffbf","9bf6ff","a0c4ff","bdb2ff","ffc6ff"];
+    const colors = ["ffadad","ffd6a5","caffbf","9bf6ff","a0c4ff","bdb2ff","ffc6ff"];
     const index = [...name].reduce((acc, c) => acc + c.charCodeAt(0), 0) % colors.length;
     return colors[index];
 }
