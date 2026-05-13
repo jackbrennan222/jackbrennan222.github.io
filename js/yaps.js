@@ -23,7 +23,7 @@ function prependYap(yap, prepend = true) {
     const hasLiked = currentUser && yap.likes?.some(l => l.$oid === currentUser._id?.$oid);
     const likeCount = yap.likes?.length ?? 0;
     const initial = (yap.username || "?")[0].toUpperCase();
-    const color = colorFromName(yap.username || "");
+    const color = colorFromName(yap.username[0] || "");
     const timeAgo = formatTimeAgo(yap.created_at.$date.$numberLong);
 
     const entry = document.createElement("div");
