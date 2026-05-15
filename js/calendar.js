@@ -88,6 +88,7 @@ function renderHomeCalendar() {
             const pill = document.createElement('button');
             const eventDate = new Date(year, month, day);
             pill.className = `event-pill ${event.category}${event.approved ? '' : '-pending'} ${eventDate < today ? 'past' : ''}`;
+            pill.dataset.icon = event.icon;
             pill.innerHTML = `<span class="pill-title">${event.icon} ${event.title}</span>${ event.location ? '<span>📍 ' + event.location + '</span>' : ''}<small>${event.time}</small>`;
             if (event.approved) { pill.addEventListener('click', () => openRsvpModal(event)); }
             else { pill.addEventListener('click', () => navigate('admin')); }

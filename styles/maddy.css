@@ -978,27 +978,29 @@
       }
 
       /* Hide pills on mobile; show dots instead */
-      .event-pill { display: none !important; }
+      .event-pill { display: flex !important; }
 
       /* Dot container — rendered by JS, see note below */
-      .mobile-dot-row {
-        display: flex;
-        gap: 3px;
-        flex-wrap: wrap;
+      .mobile-dot-row { display: none; }
+
+      .event-pill {
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
-        max-width: 32px;
+        width: 100%;
+        min-height: 36px;
+        border-radius: 8px;
+        padding: 4px 2px;
+        font-size: 14px;
+        text-align: center;
+        white-space: normal;
       }
 
-      .mobile-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-      .mobile-dot.drinks  { background: rgba(226,196,170,1); }
-      .mobile-dot.dining  { background: rgba(200,150,100,0.9); }
-      .mobile-dot.daytrip { background: rgba(100,180,200,0.9); }
-      .mobile-dot.yapping { background: rgba(142,165,140,0.9); }
+      /* Hide the title and time text — icon only on mobile */
+      .event-pill .pill-title { display: none; }
+      .event-pill span        { display: none; }
+      .event-pill small       { display: none; }
+      .event-pill::before     { content: attr(data-icon); font-size: 16px; }
 
       /* ── LEGEND ── */
       .cal-legend {
