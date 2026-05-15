@@ -219,11 +219,14 @@
   </div>
 
   <!-- Mobile nav -->
-  <nav class="mobile-nav">
-    <button class="active" data-view="home"><span class="m-icon">⌂</span><span>Home</span></button>
-    <button data-view="events"><span class="m-icon">☆</span><span>Events</span></button>
-    <button data-view="polls"><span class="m-icon">▥</span><span>Polls</span></button>
-    <button data-view="members"><span class="m-icon">♡</span><span>Members</span></button>
+  <nav class="mobile-nav collapsed" id="mobileNav">
+    <div class="mobile-nav-collapsed-hint" id="mobileNavHint">▲ menu</div>
+    <div class="mobile-nav-items">
+      <button class="active" data-view="home"><span class="m-icon">⌂</span><span>Home</span></button>
+      <button data-view="events"><span class="m-icon">☆</span><span>Events</span></button>
+      <button data-view="polls"><span class="m-icon">▥</span><span>Polls</span></button>
+      <button data-view="members"><span class="m-icon">♡</span><span>Members</span></button>
+    </div>
   </nav>
 
   <!-- Event Modal -->
@@ -384,6 +387,34 @@
         card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
       });
     }
+
+    const mobileNav = document.getElementById('mobileNav');
+    const mobileNavHint = document.getElementById('mobileNavHint');
+
+    // Collapse on second tap of active item
+    mobileNavBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (mobileNav.classList.contains('collapsed')) {
+          mobileNav.classList.remove('collapsed');
+        }
+      });
+    });
+
+    // Tap hint bar to expand
+    mobileNavHint.addEventListener('click', () => {
+      mobileNav.classList.remove('collapsed');
+    });
+
+    // Double-tap active button to collapse
+    let lastTapped = null;
+    mobileNavBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (lastTapped === btn.dataset.view) {
+          mobileNav.classList.toggle('collapsed');
+        }
+        lastTapped = btn.dataset.view;
+      });
+    });
 
     // ── LOGOUT ──
     document.getElementById('logoutBtn').addEventListener('click', () => logout());
