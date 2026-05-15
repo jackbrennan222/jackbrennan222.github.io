@@ -92,6 +92,7 @@ function renderHomeCalendar() {
             if (event.approved) { pill.addEventListener('click', () => openRsvpModal(event)); }
             else { pill.addEventListener('click', () => navigate('admin')); }
             cell.appendChild(pill);
+            ensureDotRow(cell, event.category);
         });
 
         grid.appendChild(cell);
@@ -316,6 +317,21 @@ function to12(time24) {
     const ampm = h >= 12 ? 'PM' : 'AM';
     const h12  = h % 12 || 12;
     return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+}
+
+function ensureDotRow(cell, cat) {
+  let row = cell.querySelector('.mobile-dot-row');
+  if (!row) {
+    row = document.createElement('div');
+    row.className = 'mobile-dot-row';
+    cell.appendChild(row);
+  }
+  
+  if (row.children.length < 3) {
+    const dot = document.createElement('span');
+    dot.className = `mobile-dot ${cat}`;
+    row.appendChild(dot);
+  }
 }
 
 // ── INIT ──

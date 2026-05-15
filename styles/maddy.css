@@ -919,31 +919,131 @@
     }
 
     @media (max-width: 768px) {
-      .shell { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+      .shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+      }
       .sidebar, .right-panel { display: none; }
-      main { grid-column: 1; padding-bottom: 80px; }
+      main {
+        grid-column: 1;
+        padding-bottom: 90px; /* clear the nav bar */
+      }
+
+      /* ── TOP BAR ── */
+      .topbar { padding: 16px 16px 0; }
+      .page-title { font-size: 20px; }
+      .primary-btn { padding: 8px 14px; font-size: 12px; }
+      /* Shorten the label so it fits */
+      #proposeBtn::after { content: ''; }
+      #proposeBtn { font-size: 0; }
+      #proposeBtn::before { content: '＋ Propose'; font-size: 12px; font-weight: 700; }
+
+      /* ── HOME VIEW ── */
+      .home-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        gap: 12px;
+      }
+      .home-cal-card {
+        grid-column: 1;
+        padding: 14px;
+      }
+
+      /* ── CALENDAR: dots instead of pills ── */
+      .cal-month-title { font-size: 18px; }
+
+      .cal-grid {
+        /* Fixed row height: header row + 5 week rows */
+        grid-template-rows: 28px repeat(5, minmax(54px, 1fr));
+        border-radius: 12px;
+      }
+
+      .cal-weekday {
+        font-size: 10px;
+        padding: 7px 0;
+        letter-spacing: 0.04em;
+      }
+
+      .cal-cell {
+        padding: 5px 2px 4px;
+        align-items: center;    /* center dots horizontally */
+        min-height: 54px;
+      }
+
+      .cal-date {
+        font-size: 11px;
+        width: 22px;
+        height: 22px;
+        margin-bottom: 2px;
+      }
+
+      /* Hide pills on mobile; show dots instead */
+      .event-pill { display: none !important; }
+
+      /* Dot container — rendered by JS, see note below */
+      .mobile-dot-row {
+        display: flex;
+        gap: 3px;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 32px;
+      }
+
+      .mobile-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .mobile-dot.drinks  { background: rgba(226,196,170,1); }
+      .mobile-dot.dining  { background: rgba(200,150,100,0.9); }
+      .mobile-dot.daytrip { background: rgba(100,180,200,0.9); }
+      .mobile-dot.yapping { background: rgba(142,165,140,0.9); }
+
+      /* ── LEGEND ── */
+      .cal-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 14px;
+        padding-top: 10px;
+        font-size: 11px;
+      }
+
+      /* ── OTHER VIEWS ── */
+      .events-grid { grid-template-columns: 1fr; }
+      .events-filters { flex-wrap: wrap; gap: 6px; }
+      .polls-layout { grid-template-columns: 1fr; overflow-y: auto; }
+      .members-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-layout { grid-template-columns: 1fr; overflow-y: auto; }
+
+      /* ── BOTTOM NAV ── */
       .mobile-nav {
-        display: grid; grid-template-columns: repeat(5, 1fr);
-        position: fixed; left: 12px; right: 12px; bottom: 12px;
-        background: rgba(255,253,248,0.95);
-        border: 1px solid var(--line); border-radius: 20px;
-        padding: 10px; box-shadow: 0 16px 40px rgba(57,44,28,0.18);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        position: fixed;
+        left: 12px; right: 12px; bottom: 12px;
+        background: rgba(255,253,248,0.97);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 8px;
+        box-shadow: 0 8px 28px rgba(57,44,28,0.14);
         z-index: 40;
       }
       .mobile-nav button {
-        background: transparent; color: var(--muted);
-        display: grid; gap: 2px; place-items: center;
-        font-size: 10px; border-radius: 10px; padding: 6px;
+        background: transparent;
+        color: var(--muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        font-size: 10px;
+        border-radius: 12px;
+        padding: 8px 4px;
+        transition: all 0.15s;
       }
-      .mobile-nav button.active { color: var(--orange); }
-      .mobile-nav .m-icon { font-size: 20px; }
-      .home-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
-      .next-event-card { grid-column: 1; }
-      .upcoming-card { grid-column: 1; grid-row: auto; }
-      .mini-cal-card { grid-column: 1; }
-      .events-grid { grid-template-columns: 1fr; }
-      .polls-layout { grid-template-columns: 1fr; }
-      .members-grid { grid-template-columns: repeat(2, 1fr); }
-      .about-layout { grid-template-columns: 1fr; }
-      .cal-grid { grid-template-rows: 28px repeat(6, 1fr); }
+      .mobile-nav button.active {
+        color: var(--orange);
+        background: rgba(251,91,5,0.07);
+      }
+      .m-icon { font-size: 20px; }
     }
